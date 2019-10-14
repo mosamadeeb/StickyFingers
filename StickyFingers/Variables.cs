@@ -51,6 +51,8 @@ namespace StickyFingers
     {
         public string MeshName { get; set; }
         public int NudIndex { get; set; }
+        public int FileStart { get; set; }
+        public int HeaderSize { get; set; }
         public int FileSize { get; set; }
         public int NDP3Size { get; set; }
         public int MeshIndex { get; set; }
@@ -68,5 +70,7 @@ namespace StickyFingers
         public List<byte> UVFile { get; set; }
         public List<byte> VertFile { get; set; }
         public List<byte> NudFile { get; set; }
+        public List<byte> GroupBytes { get; set; }
+
     }
 }

@@ -58,6 +58,10 @@
             this.exportNud1 = new System.Windows.Forms.Button();
             this.exportNud2 = new System.Windows.Forms.Button();
             this.replaceButton = new System.Windows.Forms.Button();
+            this.groupsLabel1 = new System.Windows.Forms.Label();
+            this.groups1Label = new System.Windows.Forms.Label();
+            this.groupsLabel2 = new System.Windows.Forms.Label();
+            this.groups2Label = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // xfbin1Box
@@ -154,7 +158,7 @@
             // 
             this.group1Label.AutoSize = true;
             this.group1Label.BackColor = System.Drawing.SystemColors.Control;
-            this.group1Label.Location = new System.Drawing.Point(731, 123);
+            this.group1Label.Location = new System.Drawing.Point(727, 122);
             this.group1Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.group1Label.Name = "group1Label";
             this.group1Label.Size = new System.Drawing.Size(20, 17);
@@ -165,7 +169,7 @@
             // 
             this.group1CountLabel.AutoSize = true;
             this.group1CountLabel.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.group1CountLabel.Location = new System.Drawing.Point(630, 123);
+            this.group1CountLabel.Location = new System.Drawing.Point(630, 122);
             this.group1CountLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.group1CountLabel.Name = "group1CountLabel";
             this.group1CountLabel.Size = new System.Drawing.Size(87, 17);
@@ -187,7 +191,7 @@
             // 
             this.group2Label.AutoSize = true;
             this.group2Label.BackColor = System.Drawing.SystemColors.Control;
-            this.group2Label.Location = new System.Drawing.Point(731, 307);
+            this.group2Label.Location = new System.Drawing.Point(727, 307);
             this.group2Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.group2Label.Name = "group2Label";
             this.group2Label.Size = new System.Drawing.Size(20, 17);
@@ -220,7 +224,7 @@
             // 
             this.mesh1IndexLabel.AutoSize = true;
             this.mesh1IndexLabel.BackColor = System.Drawing.SystemColors.Control;
-            this.mesh1IndexLabel.Location = new System.Drawing.Point(731, 95);
+            this.mesh1IndexLabel.Location = new System.Drawing.Point(727, 95);
             this.mesh1IndexLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.mesh1IndexLabel.Name = "mesh1IndexLabel";
             this.mesh1IndexLabel.Size = new System.Drawing.Size(20, 17);
@@ -231,7 +235,7 @@
             // 
             this.mesh2IndexLabel.AutoSize = true;
             this.mesh2IndexLabel.BackColor = System.Drawing.SystemColors.Control;
-            this.mesh2IndexLabel.Location = new System.Drawing.Point(731, 279);
+            this.mesh2IndexLabel.Location = new System.Drawing.Point(727, 279);
             this.mesh2IndexLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.mesh2IndexLabel.Name = "mesh2IndexLabel";
             this.mesh2IndexLabel.Size = new System.Drawing.Size(20, 17);
@@ -242,7 +246,7 @@
             // 
             this.mirror1Label.AutoSize = true;
             this.mirror1Label.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.mirror1Label.Location = new System.Drawing.Point(630, 177);
+            this.mirror1Label.Location = new System.Drawing.Point(630, 199);
             this.mirror1Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.mirror1Label.Name = "mirror1Label";
             this.mirror1Label.Size = new System.Drawing.Size(49, 17);
@@ -253,7 +257,7 @@
             // 
             this.mirror2Label.AutoSize = true;
             this.mirror2Label.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.mirror2Label.Location = new System.Drawing.Point(630, 360);
+            this.mirror2Label.Location = new System.Drawing.Point(630, 385);
             this.mirror2Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.mirror2Label.Name = "mirror2Label";
             this.mirror2Label.Size = new System.Drawing.Size(49, 17);
@@ -264,7 +268,7 @@
             // 
             this.mirrorState2Label.AutoSize = true;
             this.mirrorState2Label.BackColor = System.Drawing.SystemColors.Control;
-            this.mirrorState2Label.Location = new System.Drawing.Point(731, 360);
+            this.mirrorState2Label.Location = new System.Drawing.Point(716, 385);
             this.mirrorState2Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.mirrorState2Label.Name = "mirrorState2Label";
             this.mirrorState2Label.Size = new System.Drawing.Size(20, 17);
@@ -275,7 +279,7 @@
             // 
             this.mirrorState1Label.AutoSize = true;
             this.mirrorState1Label.BackColor = System.Drawing.SystemColors.Control;
-            this.mirrorState1Label.Location = new System.Drawing.Point(731, 177);
+            this.mirrorState1Label.Location = new System.Drawing.Point(716, 199);
             this.mirrorState1Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.mirrorState1Label.Name = "mirrorState1Label";
             this.mirrorState1Label.Size = new System.Drawing.Size(20, 17);
@@ -286,7 +290,7 @@
             // 
             this.material1Label.AutoSize = true;
             this.material1Label.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.material1Label.Location = new System.Drawing.Point(630, 151);
+            this.material1Label.Location = new System.Drawing.Point(630, 173);
             this.material1Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.material1Label.Name = "material1Label";
             this.material1Label.Size = new System.Drawing.Size(62, 17);
@@ -297,7 +301,7 @@
             // 
             this.material2Label.AutoSize = true;
             this.material2Label.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.material2Label.Location = new System.Drawing.Point(630, 334);
+            this.material2Label.Location = new System.Drawing.Point(630, 359);
             this.material2Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.material2Label.Name = "material2Label";
             this.material2Label.Size = new System.Drawing.Size(62, 17);
@@ -308,7 +312,7 @@
             // 
             this.mat1Label.AutoSize = true;
             this.mat1Label.BackColor = System.Drawing.SystemColors.Control;
-            this.mat1Label.Location = new System.Drawing.Point(731, 151);
+            this.mat1Label.Location = new System.Drawing.Point(697, 173);
             this.mat1Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.mat1Label.Name = "mat1Label";
             this.mat1Label.Size = new System.Drawing.Size(20, 17);
@@ -319,7 +323,7 @@
             // 
             this.mat2Label.AutoSize = true;
             this.mat2Label.BackColor = System.Drawing.SystemColors.Control;
-            this.mat2Label.Location = new System.Drawing.Point(731, 334);
+            this.mat2Label.Location = new System.Drawing.Point(697, 359);
             this.mat2Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.mat2Label.Name = "mat2Label";
             this.mat2Label.Size = new System.Drawing.Size(20, 17);
@@ -363,12 +367,63 @@
             this.replaceButton.TabIndex = 57;
             this.replaceButton.Text = "Replace selected mesh";
             this.replaceButton.UseVisualStyleBackColor = true;
+            this.replaceButton.Click += new System.EventHandler(this.ReplaceButton_Click);
+            // 
+            // groupsLabel1
+            // 
+            this.groupsLabel1.AutoSize = true;
+            this.groupsLabel1.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.groupsLabel1.Location = new System.Drawing.Point(630, 148);
+            this.groupsLabel1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.groupsLabel1.Name = "groupsLabel1";
+            this.groupsLabel1.Size = new System.Drawing.Size(59, 17);
+            this.groupsLabel1.TabIndex = 59;
+            this.groupsLabel1.Text = "Groups:";
+            // 
+            // groups1Label
+            // 
+            this.groups1Label.AutoSize = true;
+            this.groups1Label.BackColor = System.Drawing.SystemColors.Control;
+            this.groups1Label.Location = new System.Drawing.Point(693, 148);
+            this.groups1Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.groups1Label.Name = "groups1Label";
+            this.groups1Label.Size = new System.Drawing.Size(20, 17);
+            this.groups1Label.TabIndex = 58;
+            this.groups1Label.Text = "   ";
+            this.groups1Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // groupsLabel2
+            // 
+            this.groupsLabel2.AutoSize = true;
+            this.groupsLabel2.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.groupsLabel2.Location = new System.Drawing.Point(630, 332);
+            this.groupsLabel2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.groupsLabel2.Name = "groupsLabel2";
+            this.groupsLabel2.Size = new System.Drawing.Size(59, 17);
+            this.groupsLabel2.TabIndex = 61;
+            this.groupsLabel2.Text = "Groups:";
+            // 
+            // groups2Label
+            // 
+            this.groups2Label.AutoSize = true;
+            this.groups2Label.BackColor = System.Drawing.SystemColors.Control;
+            this.groups2Label.Location = new System.Drawing.Point(693, 332);
+            this.groups2Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.groups2Label.Name = "groups2Label";
+            this.groups2Label.Size = new System.Drawing.Size(20, 17);
+            this.groups2Label.TabIndex = 60;
+            this.groups2Label.Text = "   ";
+            this.groups2Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(820, 450);
+            this.Controls.Add(this.groupsLabel2);
+            this.Controls.Add(this.groups2Label);
+            this.Controls.Add(this.groupsLabel1);
+            this.Controls.Add(this.groups1Label);
             this.Controls.Add(this.replaceButton);
             this.Controls.Add(this.exportNud2);
             this.Controls.Add(this.exportNud1);
@@ -396,6 +451,7 @@
             this.Controls.Add(this.xfbin1Browse);
             this.Controls.Add(this.xfbin2Box);
             this.Controls.Add(this.xfbin1Box);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "Sticky Fingers - Mesh Replacer for JoJo ASB/EoH";
@@ -435,6 +491,10 @@
         private System.Windows.Forms.Button exportNud1;
         private System.Windows.Forms.Button exportNud2;
         private System.Windows.Forms.Button replaceButton;
+        private System.Windows.Forms.Label groupsLabel1;
+        private System.Windows.Forms.Label groups1Label;
+        private System.Windows.Forms.Label groupsLabel2;
+        private System.Windows.Forms.Label groups2Label;
     }
 }
 

@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static StickyFingers.Variables;
@@ -25,8 +26,8 @@ namespace StickyFingers
             if (xfbin2Open)
             {
                 exportNud2.Enabled = true;
-                //if (xfbin1Open) replaceButton.Enabled = true;
-                //else replaceButton.Enabled = false;
+                if (xfbin1Open) replaceButton.Enabled = true;
+                else replaceButton.Enabled = false;
             }
             else exportNud2.Enabled = false;
         }
@@ -75,11 +76,17 @@ namespace StickyFingers
         public void RefreshProperties(int xfbinNo)
         {
             int x;
+            string groupsText = "";
             if (xfbinNo == 1)
             {
                 x = mesh1Box.SelectedIndex;
                 mesh1IndexLabel.Text = meshList1[x].MeshIndex.ToString();
                 group1Label.Text = meshList1[x].GroupCount.ToString();
+                foreach (var group in meshList1[x].GroupBytes)
+                {
+                    groupsText = groupsText + group.ToString() + ", ";
+                }
+                groups1Label.Text = groupsText.Remove(groupsText.Length - 2);
                 mat1Label.Text = meshList1[x].Material;
                 if (meshList1[x].Mirror) mirrorState1Label.Text = "Yes";
                 else mirrorState1Label.Text = "No";
@@ -90,6 +97,11 @@ namespace StickyFingers
                 x = mesh2Box.SelectedIndex;
                 mesh2IndexLabel.Text = meshList2[x].MeshIndex.ToString();
                 group2Label.Text = meshList2[x].GroupCount.ToString();
+                foreach (var group in meshList2[x].GroupBytes)
+                {
+                    groupsText = groupsText + group.ToString() + ", ";
+                }
+                groups2Label.Text = groupsText.Remove(groupsText.Length - 2);
                 mat2Label.Text = meshList2[x].Material;
                 if (meshList2[x].Mirror) mirrorState2Label.Text = "Yes";
                 else mirrorState2Label.Text = "No";
@@ -103,6 +115,7 @@ namespace StickyFingers
                 xfbin1Box.Text = "";
                 mesh1IndexLabel.Text = "";
                 group1Label.Text = "";
+                groups1Label.Text = "";
                 mat1Label.Text = "";
                 mirrorState1Label.Text = "";
                 meshCount1 = 0;
@@ -119,6 +132,7 @@ namespace StickyFingers
                 xfbin2Box.Text = "";
                 mesh2IndexLabel.Text = "";
                 group2Label.Text = "";
+                groups2Label.Text = "";
                 mat2Label.Text = "";
                 mirrorState2Label.Text = "";
                 meshCount2 = 0;
@@ -137,6 +151,13 @@ namespace StickyFingers
         private void ExportNud2_Click(object sender, EventArgs e)
         {
             ExportNud(file1Bytes, meshList2, mesh2Box.SelectedIndex);
+        }
+
+        private void ReplaceButton_Click(object sender, EventArgs e)
+        {
+            ReplaceMesh(mesh1Box.SelectedIndex, mesh2Box.SelectedIndex);
+            File.WriteAllBytes("new.xfbin", file1Bytes.ToArray());
+            MessageBox.Show($"File saved as \"new.xfbin\" in the program's directory.", $"Success");
         }
     }
 }

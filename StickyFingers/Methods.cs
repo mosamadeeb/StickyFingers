@@ -29,7 +29,6 @@ namespace StickyFingers
             MainF.XfbinClose(xfbinNo);
             byte[] fileBytes = File.ReadAllBytes(xfbinPath);
             List<NUD> meshList = new List<NUD>();
-            List<byte> nudFile = new List<byte>();
             int meshCount = 0;
             searchResults = SearchForByte("NDP3", fileBytes, 0, fileBytes.Length, 0);
             if (!searchResults.Any())
@@ -40,21 +39,19 @@ namespace StickyFingers
             for (int i = 0; i < searchResults.Count; i++)
             {
                 int x = searchResults[i];
+                int headerSize;
                 int fileStart;
-                int fileSize;
-                int meshIndex;
                 if (fileBytes[x - 4] != 0x00)
                 {
-                    fileStart = x - 0x40;
-                    fileSize = BigBitConverter.ToInt32(fileBytes, fileStart) + 0x08;
-                    meshIndex = fileBytes[x - 0x39];
+                    headerSize = 0x40;
+                    fileStart = x - headerSize;
                 }
                 else
                 {
-                    fileStart = x - 0x28;
-                    fileSize = BigBitConverter.ToInt32(fileBytes, fileStart) + 0x08;
-                    meshIndex = fileBytes[x - 0x21];
+                    headerSize = 0x28;
+                    fileStart = x - headerSize;
                 }
+                int meshIndex = fileBytes[fileStart + 0x07];
                 int ndp3Size = BigBitConverter.ToInt32(fileBytes, x + 0x04);
                 int sec1Size = BigBitConverter.ToInt32(fileBytes, x + 0x10);
                 int sec1Index = x + 0x30;
@@ -66,6 +63,7 @@ namespace StickyFingers
                 int vertIndex = uvIndex + uvSize;
                 int vertFormat = fileBytes[sec1Index + 0x27]; // either 0x14 or 0x00, for stating if there are vertices or not
                 int groupCount = fileBytes[sec1Index + 0x2B];
+                int fileSize = headerSize + ndp3Size + 0x02 + (groupCount * 0x04);
                 int matIndex = x + BigBitConverter.ToInt16(fileBytes, sec1Index + 0x42);
                 bool mirrorState = false;
                 int mirrorByte = BigBitConverter.ToInt16(fileBytes, matIndex + 0x12);
@@ -76,17 +74,27 @@ namespace StickyFingers
                 meshName = meshName.Remove(meshName.IndexOf("\0"));
                 //string meshFormat = NDP3Format(fileBytes[x + 0x23]);
 
+                List<byte> groupBytes = new List<byte>();
+                for (int a = 0; a < groupCount; a++)
+                {
+                    groupBytes.Add(fileBytes[(x - 1) + ndp3Size + 0x06 + (a * 4)]);
+                }
+
+                List<byte> nudFile = new List<byte>();
                 for (int a = 0; a < fileSize; a++)
                 {
                     nudFile.Add(fileBytes[fileStart + a]);
                 }
+
                 meshList.Add(new NUD
                 {
                     MeshName = meshName,
                     NudIndex = x,
-                    MeshIndex = meshIndex,
+                    FileStart = fileStart,
+                    HeaderSize = headerSize,
                     FileSize = fileSize,
                     NDP3Size = ndp3Size,
+                    MeshIndex = meshIndex,
                     TriIndex = triIndex,
                     TriSize = triSize,
                     UVIndex = uvIndex,
@@ -97,13 +105,13 @@ namespace StickyFingers
                     GroupCount = groupCount,
                     Material = matName,
                     Mirror = mirrorState,
-                    NudFile = nudFile
+                    NudFile = nudFile,
+                    GroupBytes = groupBytes
                 });
                 meshCount++;
             }
             if (xfbinNo == 1)
             {
-                //xfbin1Box.Text = xfbinPath;
                 xfbin1Open = true;
                 xfbin1Path = xfbinPath;
                 file1Bytes = fileBytes.ToList();
@@ -112,7 +120,6 @@ namespace StickyFingers
             }
             else if (xfbinNo == 2)
             {
-                //xfbin2Box.Text = xfbinPath;
                 xfbin2Open = true;
                 xfbin2Path = xfbinPath;
                 file2Bytes = fileBytes.ToList();
@@ -128,6 +135,44 @@ namespace StickyFingers
             byte[] newNud = new byte[count];
             fileBytes.CopyTo(start, newNud, 0, count);
             File.WriteAllBytes(meshList[index].MeshName + ".nud", newNud);
+        }
+        public static void ReplaceMesh(int index1, int index2)
+        {
+            int fileStart = meshList1[index1].FileStart;
+            int fileSize = meshList1[index1].FileSize;
+            int fileEnd = fileStart + fileSize;
+            int xfbinEnd = file1Bytes.Count - fileEnd;
+            byte[] temp = new byte[xfbinEnd];
+            file1Bytes.CopyTo(fileEnd, temp, 0, xfbinEnd);
+            file1Bytes.RemoveRange(fileStart, file1Bytes.Count - fileStart);
+            file1Bytes.AddRange(FixGroupBytes(index1, index2));
+            file1Bytes.AddRange(temp);
+        }
+        public static List<byte> FixGroupBytes(int index1, int index2)
+        {
+            int groups1 = meshList1[index1].GroupCount;
+            int groups2 = meshList2[index2].GroupCount;
+            int groupStart = meshList2[index2].HeaderSize + meshList2[index2].NDP3Size + 0x05;
+            List<byte> newNud = meshList2[index2].NudFile;
+
+            // Change mesh index
+            newNud[0x07] = BitConverter.GetBytes(meshList1[index1].MeshIndex)[0];
+
+            if (groups1 >= groups2)
+            {
+                for (int x = 0; x < groups2; x++)
+                {
+                    newNud[groupStart + (x * 4)] = meshList1[index1].GroupBytes[x];
+                }
+            }
+            else // This technically works but might not do so in the game;
+            {    // needs a function to get the group bytes from other meshes
+                for (int x = 0; x < groups1; x++)
+                {
+                    newNud[groupStart + (x * 4)] = meshList1[index1].GroupBytes[x];
+                }
+            }
+            return newNud;
         }
         public static List<int> SearchForByte(string search, byte[] file, int start, int end, int count)
         {
