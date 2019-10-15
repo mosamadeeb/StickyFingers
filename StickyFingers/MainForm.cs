@@ -88,8 +88,7 @@ namespace StickyFingers
                 }
                 groups1Label.Text = groupsText.Remove(groupsText.Length - 2);
                 mat1Label.Text = meshList1[x].Material;
-                if (meshList1[x].Mirror) mirrorState1Label.Text = "Yes";
-                else mirrorState1Label.Text = "No";
+                formatByte1Label.Text = meshList1[x].MeshFormat;
 
             }
             else if (xfbinNo == 2)
@@ -103,8 +102,7 @@ namespace StickyFingers
                 }
                 groups2Label.Text = groupsText.Remove(groupsText.Length - 2);
                 mat2Label.Text = meshList2[x].Material;
-                if (meshList2[x].Mirror) mirrorState2Label.Text = "Yes";
-                else mirrorState2Label.Text = "No";
+                formatByte2Label.Text = meshList2[x].MeshFormat;
             }
         }
         public void XfbinClose(int xfbinNo)
@@ -117,7 +115,7 @@ namespace StickyFingers
                 group1Label.Text = "";
                 groups1Label.Text = "";
                 mat1Label.Text = "";
-                mirrorState1Label.Text = "";
+                formatByte1Label.Text = "";
                 meshCount1 = 0;
                 if (xfbin1Open)
                 {
@@ -134,7 +132,7 @@ namespace StickyFingers
                 group2Label.Text = "";
                 groups2Label.Text = "";
                 mat2Label.Text = "";
-                mirrorState2Label.Text = "";
+                formatByte2Label.Text = "";
                 meshCount2 = 0;
                 if (xfbin2Open)
                 {

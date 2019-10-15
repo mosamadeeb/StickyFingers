@@ -38,76 +38,7 @@ namespace StickyFingers
             }
             for (int i = 0; i < searchResults.Count; i++)
             {
-                int x = searchResults[i];
-                int headerSize;
-                int fileStart;
-                if (fileBytes[x - 4] != 0x00)
-                {
-                    headerSize = 0x40;
-                    fileStart = x - headerSize;
-                }
-                else
-                {
-                    headerSize = 0x28;
-                    fileStart = x - headerSize;
-                }
-                int meshIndex = fileBytes[fileStart + 0x07];
-                int ndp3Size = BigBitConverter.ToInt32(fileBytes, x + 0x04);
-                int sec1Size = BigBitConverter.ToInt32(fileBytes, x + 0x10);
-                int sec1Index = x + 0x30;
-                int triSize = BigBitConverter.ToInt32(fileBytes, x + 0x14);
-                int triIndex = sec1Index + sec1Size;
-                int uvSize = BigBitConverter.ToInt32(fileBytes, x + 0x18);
-                int uvIndex = triIndex + triSize;
-                int vertSize = BigBitConverter.ToInt32(fileBytes, x + 0x1C);
-                int vertIndex = uvIndex + uvSize;
-                int vertFormat = fileBytes[sec1Index + 0x27]; // either 0x14 or 0x00, for stating if there are vertices or not
-                int groupCount = fileBytes[sec1Index + 0x2B];
-                int fileSize = headerSize + ndp3Size + 0x02 + (groupCount * 0x04);
-                int matIndex = x + BigBitConverter.ToInt16(fileBytes, sec1Index + 0x42);
-                bool mirrorState = false;
-                int mirrorByte = BigBitConverter.ToInt16(fileBytes, matIndex + 0x12);
-                if (mirrorByte == 0x00) mirrorState = true; // true for ASB models with no bod1_f, else false
-                string matName = BitConverter.ToString(fileBytes, matIndex + 1, 3).Replace('-', ' ');
-                matName = matName.TrimStart('0', '0', ' ');
-                string meshName = Encoding.Default.GetString(fileBytes.ToArray(), vertIndex + vertSize, 0x20);
-                meshName = meshName.Remove(meshName.IndexOf("\0"));
-                //string meshFormat = NDP3Format(fileBytes[x + 0x23]);
-
-                List<byte> groupBytes = new List<byte>();
-                for (int a = 0; a < groupCount; a++)
-                {
-                    groupBytes.Add(fileBytes[(x - 1) + ndp3Size + 0x06 + (a * 4)]);
-                }
-
-                List<byte> nudFile = new List<byte>();
-                for (int a = 0; a < fileSize; a++)
-                {
-                    nudFile.Add(fileBytes[fileStart + a]);
-                }
-
-                meshList.Add(new NUD
-                {
-                    MeshName = meshName,
-                    NudIndex = x,
-                    FileStart = fileStart,
-                    HeaderSize = headerSize,
-                    FileSize = fileSize,
-                    NDP3Size = ndp3Size,
-                    MeshIndex = meshIndex,
-                    TriIndex = triIndex,
-                    TriSize = triSize,
-                    UVIndex = uvIndex,
-                    UVSize = uvSize,
-                    VertIndex = vertIndex,
-                    VertSize = vertSize,
-                    VertFormat = vertFormat,
-                    GroupCount = groupCount,
-                    Material = matName,
-                    Mirror = mirrorState,
-                    NudFile = nudFile,
-                    GroupBytes = groupBytes
-                });
+                meshList.Add(LoadNud(fileBytes, searchResults[i], true));
                 meshCount++;
             }
             if (xfbinNo == 1)
@@ -128,13 +59,133 @@ namespace StickyFingers
             }
             return true;
         }
+        public static NUD LoadNud(byte[] fileBytes, int index, bool header)
+        {
+            int x = index;
+            int headerSize = 0;
+            int fileStart = index;
+            int fileSize;
+            int meshIndex = 0;
+            int ndp3Size = fileBytes[x + 0x05] * 0x10000 + fileBytes[x + 0x06] * 0x100 + fileBytes[x + 0x07];
+            int sec1Index = x + 0x30;
+            int groupCount = fileBytes[sec1Index + 0x2B];
+            int vertCount = 0;
+            byte[] nudFile;
+            List<byte> groupBytes = new List<byte>();
+            if (header)
+            {
+                if (fileBytes[x - 4] != 0x00)
+                {
+                    headerSize = 0x40;
+                    fileStart = x - headerSize;
+                }
+                else
+                {
+                    headerSize = 0x28;
+                    fileStart = x - headerSize;
+                }
+
+                fileSize = headerSize + ndp3Size + 0x02 + (groupCount * 0x04);
+                nudFile = new byte[fileSize];
+                Array.Copy(fileBytes, fileStart, nudFile, 0, fileSize);
+                x = headerSize;
+                sec1Index = x + 0x30;
+                fileStart = 0;
+                for (int a = 0; a < groupCount; a++)
+                {
+                    vertCount += BigBitConverter.ToInt16(nudFile, sec1Index + 0x3C + (a * 0x30));
+                    groupBytes.Add(nudFile[(x - 1) + ndp3Size + 0x06 + (a * 4)]);
+                }
+                meshIndex = nudFile[fileStart + 0x07];
+            }
+            else
+            {
+                fileSize = headerSize + ndp3Size + 0x02;
+                nudFile = fileBytes;
+                for (int a = 0; a < groupCount; a++)
+                {
+                    vertCount += BigBitConverter.ToInt16(nudFile, sec1Index + 0x3C + (a * 0x30));
+                }
+            }
+
+            int sec1Size = BigBitConverter.ToInt32(nudFile, x + 0x10);
+            int triSize = BigBitConverter.ToInt32(nudFile, x + 0x14);
+            int triIndex = sec1Index + sec1Size;
+            int uvSize = BigBitConverter.ToInt32(nudFile, x + 0x18);
+            int uvIndex = triIndex + triSize;
+            int vertSize = BigBitConverter.ToInt32(nudFile, x + 0x1C);
+            int vertIndex = uvIndex + uvSize;
+            int vertFormat = nudFile[sec1Index + 0x27]; // either 0x14 or 0x00, for stating if there are vertices or not
+
+
+            int matIndex = x + BigBitConverter.ToInt16(nudFile, sec1Index + 0x42);
+            bool mirrorState = false;
+            int mirrorByte = BigBitConverter.ToInt16(nudFile, matIndex + 0x12);
+            if (mirrorByte == 0x00) mirrorState = true; // true for ASB models with no bod1_f, else false
+            string matName = BitConverter.ToString(nudFile, matIndex + 1, 3).Replace('-', ' ');
+            if (matName[1] == '0') matName = matName.TrimStart('0', '0', ' ');
+            string meshName = Encoding.Default.GetString(nudFile.ToArray(), vertIndex + vertSize, 0x20);
+            meshName = meshName.Remove(meshName.IndexOf("\0"));
+
+            int meshFormat;
+            if (vertSize == 0)
+            {
+                meshFormat = uvSize / vertCount;
+            }
+            else meshFormat = vertSize / vertCount;
+
+
+            string meshFormatName = "0x" + BitConverter.ToString(BitConverter.GetBytes(meshFormat)).Substring(0, 2);
+
+            switch (meshFormat)
+            {
+                case 0x1C: // Storm teeth/eyes
+                    break;
+                case 0x20: // Storm effects
+                    break;
+                case 0x30: // JoJo teeth
+                    break;
+                case 0x40: // Storm most meshes + JoJo eyes
+                    break;
+                case 0x60: // JoJo most meshes
+                    break;
+                default:
+                    break;
+            }
+
+            return new NUD
+            {
+                MeshName = meshName,
+                MeshFormat = meshFormatName,
+                NudIndex = x,
+                FileStart = fileStart,
+                HeaderSize = headerSize,
+                FileSize = fileSize,
+                NDP3Size = ndp3Size,
+                MeshIndex = meshIndex,
+                TriIndex = triIndex,
+                TriSize = triSize,
+                UVIndex = uvIndex,
+                UVSize = uvSize,
+                VertIndex = vertIndex,
+                VertSize = vertSize,
+                VertFormat = vertFormat,
+                GroupCount = groupCount,
+                Material = matName,
+                Mirror = mirrorState,
+                NudFile = nudFile.ToList(),
+                GroupBytes = groupBytes
+            };
+        }
         public static void ExportNud(List<byte> fileBytes, List<NUD> meshList, int index)
         {
+            string fileName = meshList[index].MeshName + ".nud";
             int start = meshList[index].NudIndex;
             int count = meshList[index].NDP3Size + 0x02 + (meshList[index].GroupCount * 4);
             byte[] newNud = new byte[count];
             fileBytes.CopyTo(start, newNud, 0, count);
-            File.WriteAllBytes(meshList[index].MeshName + ".nud", newNud);
+            File.WriteAllBytes(fileName, newNud);
+            MessageBox.Show($"File saved as \"" + fileName + "\" in the program's directory.", $"Success");
         }
         public static void ReplaceMesh(int index1, int index2)
         {
@@ -145,15 +196,28 @@ namespace StickyFingers
             byte[] temp = new byte[xfbinEnd];
             file1Bytes.CopyTo(fileEnd, temp, 0, xfbinEnd);
             file1Bytes.RemoveRange(fileStart, file1Bytes.Count - fileStart);
-            file1Bytes.AddRange(FixGroupBytes(index1, index2));
+            file1Bytes.AddRange(FixGroupBytes(index1, meshList2[index2]));
             file1Bytes.AddRange(temp);
         }
-        public static List<byte> FixGroupBytes(int index1, int index2)
+        public static void ReplaceExternalMesh(int index1)
+        {
+            // Should have different behavior with lack of header
+            int fileStart = meshList1[index1].FileStart;
+            int fileSize = meshList1[index1].FileSize;
+            int fileEnd = fileStart + fileSize;
+            int xfbinEnd = file1Bytes.Count - fileEnd;
+            byte[] temp = new byte[xfbinEnd];
+            file1Bytes.CopyTo(fileEnd, temp, 0, xfbinEnd);
+            file1Bytes.RemoveRange(fileStart, file1Bytes.Count - fileStart);
+            file1Bytes.AddRange(FixGroupBytes(index1, externalMesh));
+            file1Bytes.AddRange(temp);
+        }
+        public static List<byte> FixGroupBytes(int index1, NUD mesh2)
         {
             int groups1 = meshList1[index1].GroupCount;
-            int groups2 = meshList2[index2].GroupCount;
-            int groupStart = meshList2[index2].HeaderSize + meshList2[index2].NDP3Size + 0x05;
-            List<byte> newNud = meshList2[index2].NudFile;
+            int groups2 = mesh2.GroupCount;
+            int groupStart = mesh2.HeaderSize + mesh2.NDP3Size + 0x05;
+            List<byte> newNud = mesh2.NudFile;
 
             // Change mesh index
             newNud[0x07] = BitConverter.GetBytes(meshList1[index1].MeshIndex)[0];

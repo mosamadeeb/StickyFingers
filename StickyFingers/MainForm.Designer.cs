@@ -47,10 +47,10 @@
             this.m2IndexLabel = new System.Windows.Forms.Label();
             this.mesh1IndexLabel = new System.Windows.Forms.Label();
             this.mesh2IndexLabel = new System.Windows.Forms.Label();
-            this.mirror1Label = new System.Windows.Forms.Label();
-            this.mirror2Label = new System.Windows.Forms.Label();
-            this.mirrorState2Label = new System.Windows.Forms.Label();
-            this.mirrorState1Label = new System.Windows.Forms.Label();
+            this.format1Label = new System.Windows.Forms.Label();
+            this.format2Label = new System.Windows.Forms.Label();
+            this.formatByte2Label = new System.Windows.Forms.Label();
+            this.formatByte1Label = new System.Windows.Forms.Label();
             this.material1Label = new System.Windows.Forms.Label();
             this.material2Label = new System.Windows.Forms.Label();
             this.mat1Label = new System.Windows.Forms.Label();
@@ -242,49 +242,49 @@
             this.mesh2IndexLabel.TabIndex = 46;
             this.mesh2IndexLabel.Text = "   ";
             // 
-            // mirror1Label
+            // format1Label
             // 
-            this.mirror1Label.AutoSize = true;
-            this.mirror1Label.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.mirror1Label.Location = new System.Drawing.Point(630, 199);
-            this.mirror1Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.mirror1Label.Name = "mirror1Label";
-            this.mirror1Label.Size = new System.Drawing.Size(49, 17);
-            this.mirror1Label.TabIndex = 47;
-            this.mirror1Label.Text = "Mirror:";
+            this.format1Label.AutoSize = true;
+            this.format1Label.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.format1Label.Location = new System.Drawing.Point(630, 199);
+            this.format1Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.format1Label.Name = "format1Label";
+            this.format1Label.Size = new System.Drawing.Size(56, 17);
+            this.format1Label.TabIndex = 47;
+            this.format1Label.Text = "Format:";
             // 
-            // mirror2Label
+            // format2Label
             // 
-            this.mirror2Label.AutoSize = true;
-            this.mirror2Label.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.mirror2Label.Location = new System.Drawing.Point(630, 385);
-            this.mirror2Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.mirror2Label.Name = "mirror2Label";
-            this.mirror2Label.Size = new System.Drawing.Size(49, 17);
-            this.mirror2Label.TabIndex = 48;
-            this.mirror2Label.Text = "Mirror:";
+            this.format2Label.AutoSize = true;
+            this.format2Label.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.format2Label.Location = new System.Drawing.Point(630, 385);
+            this.format2Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.format2Label.Name = "format2Label";
+            this.format2Label.Size = new System.Drawing.Size(56, 17);
+            this.format2Label.TabIndex = 48;
+            this.format2Label.Text = "Format:";
             // 
-            // mirrorState2Label
+            // formatByte2Label
             // 
-            this.mirrorState2Label.AutoSize = true;
-            this.mirrorState2Label.BackColor = System.Drawing.SystemColors.Control;
-            this.mirrorState2Label.Location = new System.Drawing.Point(716, 385);
-            this.mirrorState2Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.mirrorState2Label.Name = "mirrorState2Label";
-            this.mirrorState2Label.Size = new System.Drawing.Size(20, 17);
-            this.mirrorState2Label.TabIndex = 49;
-            this.mirrorState2Label.Text = "   ";
+            this.formatByte2Label.AutoSize = true;
+            this.formatByte2Label.BackColor = System.Drawing.SystemColors.Control;
+            this.formatByte2Label.Location = new System.Drawing.Point(697, 385);
+            this.formatByte2Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.formatByte2Label.Name = "formatByte2Label";
+            this.formatByte2Label.Size = new System.Drawing.Size(20, 17);
+            this.formatByte2Label.TabIndex = 49;
+            this.formatByte2Label.Text = "   ";
             // 
-            // mirrorState1Label
+            // formatByte1Label
             // 
-            this.mirrorState1Label.AutoSize = true;
-            this.mirrorState1Label.BackColor = System.Drawing.SystemColors.Control;
-            this.mirrorState1Label.Location = new System.Drawing.Point(716, 199);
-            this.mirrorState1Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.mirrorState1Label.Name = "mirrorState1Label";
-            this.mirrorState1Label.Size = new System.Drawing.Size(20, 17);
-            this.mirrorState1Label.TabIndex = 50;
-            this.mirrorState1Label.Text = "   ";
+            this.formatByte1Label.AutoSize = true;
+            this.formatByte1Label.BackColor = System.Drawing.SystemColors.Control;
+            this.formatByte1Label.Location = new System.Drawing.Point(697, 199);
+            this.formatByte1Label.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.formatByte1Label.Name = "formatByte1Label";
+            this.formatByte1Label.Size = new System.Drawing.Size(20, 17);
+            this.formatByte1Label.TabIndex = 50;
+            this.formatByte1Label.Text = "   ";
             // 
             // material1Label
             // 
@@ -431,10 +431,10 @@
             this.Controls.Add(this.mat1Label);
             this.Controls.Add(this.material2Label);
             this.Controls.Add(this.material1Label);
-            this.Controls.Add(this.mirrorState1Label);
-            this.Controls.Add(this.mirrorState2Label);
-            this.Controls.Add(this.mirror2Label);
-            this.Controls.Add(this.mirror1Label);
+            this.Controls.Add(this.formatByte1Label);
+            this.Controls.Add(this.formatByte2Label);
+            this.Controls.Add(this.format2Label);
+            this.Controls.Add(this.format1Label);
             this.Controls.Add(this.mesh2IndexLabel);
             this.Controls.Add(this.mesh1IndexLabel);
             this.Controls.Add(this.m2IndexLabel);
@@ -480,10 +480,10 @@
         private System.Windows.Forms.Label m2IndexLabel;
         private System.Windows.Forms.Label mesh1IndexLabel;
         private System.Windows.Forms.Label mesh2IndexLabel;
-        private System.Windows.Forms.Label mirror1Label;
-        private System.Windows.Forms.Label mirror2Label;
-        private System.Windows.Forms.Label mirrorState2Label;
-        private System.Windows.Forms.Label mirrorState1Label;
+        private System.Windows.Forms.Label format1Label;
+        private System.Windows.Forms.Label format2Label;
+        private System.Windows.Forms.Label formatByte2Label;
+        private System.Windows.Forms.Label formatByte1Label;
         private System.Windows.Forms.Label material1Label;
         private System.Windows.Forms.Label material2Label;
         private System.Windows.Forms.Label mat1Label;

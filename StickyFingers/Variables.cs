@@ -19,6 +19,7 @@ namespace StickyFingers
         public static List<int> searchResults;
         public static List<NUD> meshList1;
         public static List<NUD> meshList2;
+        public static NUD externalMesh;
         public static int meshCount1;
         public static int meshCount2;
         public static Process Noesis;
@@ -26,19 +27,6 @@ namespace StickyFingers
         public static string ProgramVersion
         {
             get { return "1.0"; }
-        }
-
-        public static string NDP3Format(int formatByte)
-        {
-            if (formatByte == 0x0)
-            {
-                return "DXT1";
-            }
-            else if (formatByte == 0x2)
-            {
-                return "DXT5";
-            }
-            else return "Unknown format";
         }
 
         public static string appData = Path.Combine(
@@ -50,6 +38,7 @@ namespace StickyFingers
     public class NUD
     {
         public string MeshName { get; set; }
+        public string MeshFormat { get; set; }
         public int NudIndex { get; set; }
         public int FileStart { get; set; }
         public int HeaderSize { get; set; }
