@@ -52,16 +52,28 @@ namespace StickyFingers
         {
             if (openXfbin2Dialog.ShowDialog() == DialogResult.OK)
             {
-                if (XfbinOpen(2, openXfbin2Dialog.FileName))
+                FileInfo file = new FileInfo(openXfbin2Dialog.FileName);
+                if (file.Extension == ".nud")
                 {
-                    xfbin2Box.Text = xfbin2Path;
-                    foreach (var nameInList in meshList2)
-                    {
-                        mesh2Box.Items.Add(nameInList.MeshName);
-                    }
-                    mesh2Box.SelectedIndex = 0;
-                    mesh2Box.Focus();
+                    nudPath = openXfbin2Dialog.FileName;
+                    xfbin2Box.Text = nudPath;
+                    externalMesh = LoadNud(File.ReadAllBytes(nudPath), 0, false);
+                    mesh2Box.Items.Add(externalMesh.MeshName);
                 }
+                else
+                {
+                    if (XfbinOpen(2, openXfbin2Dialog.FileName))
+                    {
+                        xfbin2Box.Text = xfbin2Path;
+                        foreach (var nameInList in meshList2)
+                        {
+                            mesh2Box.Items.Add(nameInList.MeshName);
+                        }
+                    }
+                    else return;
+                }
+                mesh2Box.SelectedIndex = 0;
+                mesh2Box.Focus();
                 EnableButtons();
             }
         }
@@ -95,12 +107,12 @@ namespace StickyFingers
             {
                 x = mesh2Box.SelectedIndex;
                 mesh2IndexLabel.Text = meshList2[x].MeshIndex.ToString();
-                group2Label.Text = meshList2[x].GroupCount.ToString();
                 foreach (var group in meshList2[x].GroupBytes)
                 {
                     groupsText = groupsText + group.ToString() + ", ";
                 }
                 groups2Label.Text = groupsText.Remove(groupsText.Length - 2);
+                group2Label.Text = meshList2[x].GroupCount.ToString();
                 mat2Label.Text = meshList2[x].Material;
                 formatByte2Label.Text = meshList2[x].MeshFormat;
             }

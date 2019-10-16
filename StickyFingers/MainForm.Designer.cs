@@ -106,9 +106,9 @@
             this.xfbin2Label.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xfbin2Label.Location = new System.Drawing.Point(12, 194);
             this.xfbin2Label.Name = "xfbin2Label";
-            this.xfbin2Label.Size = new System.Drawing.Size(161, 17);
+            this.xfbin2Label.Size = new System.Drawing.Size(232, 17);
             this.xfbin2Label.TabIndex = 5;
-            this.xfbin2Label.Text = "Xfbin 2 (Extra Model)";
+            this.xfbin2Label.Text = "Xfbin 2 / Nud file (Extra Model)";
             // 
             // xfbin2Browse
             // 
@@ -129,8 +129,8 @@
             // openXfbin2Dialog
             // 
             this.openXfbin2Dialog.DefaultExt = "xfbin";
-            this.openXfbin2Dialog.Filter = "XFBIN files|*.xfbin";
-            this.openXfbin2Dialog.Title = "Open Extra Xfbin";
+            this.openXfbin2Dialog.Filter = "XFBIN files, NUD files|*.xfbin;*.nud";
+            this.openXfbin2Dialog.Title = "Open Extra Xfbin/Nud";
             // 
             // mesh1Box
             // 

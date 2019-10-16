@@ -9,10 +9,12 @@ namespace StickyFingers
     {
         public static string xfbin1Path;
         public static string xfbin2Path;
+        public static string nudPath;
         public static string meshFormat;
         public static string dragFilePath;
         public static bool xfbin1Open;
         public static bool xfbin2Open;
+        public static bool nudOpen;
         public static bool noesisStarted = false;
         public static List<byte> file1Bytes;
         public static List<byte> file2Bytes;
