@@ -21,20 +21,21 @@ namespace StickyFingers
         }
         private void EnableButtons()
         {
-            if (xfbin1Open) exportNud1.Enabled = true;
-            else exportNud1.Enabled = false;
-            if (xfbin2Open)
+            if (xfbin1Open)
             {
-                exportNud2.Enabled = true;
-                if (xfbin1Open) replaceButton.Enabled = true;
+                exportNud1.Enabled = true;
+                if (xfbin2Open || nudOpen) replaceButton.Enabled = true;
                 else replaceButton.Enabled = false;
             }
+            else exportNud1.Enabled = false;
+            if (xfbin2Open) exportNud2.Enabled = true;
             else exportNud2.Enabled = false;
         }
         private void Xfbin1Browse_Click(object sender, EventArgs e)
         {
             if (openXfbin1Dialog.ShowDialog() == DialogResult.OK)
             {
+                XfbinClose(1);
                 if (XfbinOpen(1, openXfbin1Dialog.FileName))
                 {
                     xfbin1Box.Text = xfbin1Path;
@@ -52,10 +53,12 @@ namespace StickyFingers
         {
             if (openXfbin2Dialog.ShowDialog() == DialogResult.OK)
             {
+                XfbinClose(2);
                 FileInfo file = new FileInfo(openXfbin2Dialog.FileName);
                 if (file.Extension == ".nud")
                 {
                     nudPath = openXfbin2Dialog.FileName;
+                    nudOpen = true;
                     xfbin2Box.Text = nudPath;
                     externalMesh = LoadNud(File.ReadAllBytes(nudPath), 0, false);
                     mesh2Box.Items.Add(externalMesh.MeshName);
@@ -106,15 +109,26 @@ namespace StickyFingers
             else if (xfbinNo == 2)
             {
                 x = mesh2Box.SelectedIndex;
-                mesh2IndexLabel.Text = meshList2[x].MeshIndex.ToString();
-                foreach (var group in meshList2[x].GroupBytes)
+                if (nudOpen)
                 {
-                    groupsText = groupsText + group.ToString() + ", ";
+                    mesh2IndexLabel.Text = "N/A";
+                    group2Label.Text = externalMesh.GroupCount.ToString();
+                    groups2Label.Text = "N/A";
+                    mat2Label.Text = externalMesh.Material;
+                    formatByte2Label.Text = externalMesh.MeshFormat;
                 }
-                groups2Label.Text = groupsText.Remove(groupsText.Length - 2);
-                group2Label.Text = meshList2[x].GroupCount.ToString();
-                mat2Label.Text = meshList2[x].Material;
-                formatByte2Label.Text = meshList2[x].MeshFormat;
+                else if (xfbin2Open)
+                {
+                    mesh2IndexLabel.Text = meshList2[x].MeshIndex.ToString();
+                    group2Label.Text = meshList2[x].GroupCount.ToString();
+                    foreach (var group in meshList2[x].GroupBytes)
+                    {
+                        groupsText = groupsText + group.ToString() + ", ";
+                    }
+                    groups2Label.Text = groupsText.Remove(groupsText.Length - 2);
+                    mat2Label.Text = meshList2[x].Material;
+                    formatByte2Label.Text = meshList2[x].MeshFormat;
+                }
             }
         }
         public void XfbinClose(int xfbinNo)
@@ -133,6 +147,7 @@ namespace StickyFingers
                 {
                     file1Bytes.Clear();
                     meshList1.Clear();
+                    group1Bytes.Clear();
                 }
                 xfbin1Open = false;
             }
@@ -152,6 +167,7 @@ namespace StickyFingers
                     meshList2.Clear();
                 }
                 xfbin2Open = false;
+                nudOpen = false;
             }
         }
         private void ExportNud1_Click(object sender, EventArgs e)
@@ -162,10 +178,10 @@ namespace StickyFingers
         {
             ExportNud(file1Bytes, meshList2, mesh2Box.SelectedIndex);
         }
-
         private void ReplaceButton_Click(object sender, EventArgs e)
         {
-            ReplaceMesh(mesh1Box.SelectedIndex, mesh2Box.SelectedIndex);
+            if (nudOpen) ReplaceExternalMesh(mesh1Box.SelectedIndex);
+            else ReplaceMesh(mesh1Box.SelectedIndex, mesh2Box.SelectedIndex);
             File.WriteAllBytes("new.xfbin", file1Bytes.ToArray());
             MessageBox.Show($"File saved as \"new.xfbin\" in the program's directory.", $"Success");
         }

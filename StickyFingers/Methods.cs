@@ -26,7 +26,6 @@ namespace StickyFingers
         }
         public static bool XfbinOpen(int xfbinNo, string xfbinPath)
         {
-            MainF.XfbinClose(xfbinNo);
             byte[] fileBytes = File.ReadAllBytes(xfbinPath);
             List<NUD> meshList = new List<NUD>();
             int meshCount = 0;
@@ -40,6 +39,15 @@ namespace StickyFingers
             {
                 meshList.Add(LoadNud(fileBytes, searchResults[i], true));
                 meshCount++;
+            }
+            int groupNo = 0;
+            foreach (NUD mesh in meshList)
+            {
+                if (mesh.GroupCount > groupNo)
+                {
+                    groupNo = mesh.GroupCount;
+                    group1Bytes = mesh.GroupBytes;
+                }
             }
             if (xfbinNo == 1)
             {
@@ -90,13 +98,12 @@ namespace StickyFingers
                 Array.Copy(fileBytes, fileStart, nudFile, 0, fileSize);
                 x = headerSize;
                 sec1Index = x + 0x30;
-                fileStart = 0;
                 for (int a = 0; a < groupCount; a++)
                 {
                     vertCount += BigBitConverter.ToInt16(nudFile, sec1Index + 0x3C + (a * 0x30));
                     groupBytes.Add(nudFile[(x - 1) + ndp3Size + 0x06 + (a * 4)]);
                 }
-                meshIndex = nudFile[fileStart + 0x07];
+                meshIndex = nudFile[0x07];
             }
             else
             {
@@ -157,7 +164,7 @@ namespace StickyFingers
             {
                 MeshName = meshName,
                 MeshFormat = meshFormatName,
-                NudIndex = x,
+                NudIndex = fileStart + headerSize,
                 FileStart = fileStart,
                 HeaderSize = headerSize,
                 FileSize = fileSize,
@@ -202,14 +209,25 @@ namespace StickyFingers
         public static void ReplaceExternalMesh(int index1)
         {
             // Should have different behavior with lack of header
-            int fileStart = meshList1[index1].FileStart;
-            int fileSize = meshList1[index1].FileSize;
-            int fileEnd = fileStart + fileSize;
+            int groups = meshList1[index1].GroupCount;
+            int ndp3Start = meshList1[index1].NudIndex;
+            int ndp3Size = meshList1[index1].NDP3Size + 0x02 + (groups * 0x04);
+            int fileEnd = ndp3Start + ndp3Size;
             int xfbinEnd = file1Bytes.Count - fileEnd;
             byte[] temp = new byte[xfbinEnd];
             file1Bytes.CopyTo(fileEnd, temp, 0, xfbinEnd);
-            file1Bytes.RemoveRange(fileStart, file1Bytes.Count - fileStart);
+            file1Bytes.RemoveRange(ndp3Start, file1Bytes.Count - ndp3Start);
             file1Bytes.AddRange(FixGroupBytes(index1, externalMesh));
+            int header = meshList1[index1].HeaderSize;
+            int fileSizeInt = header + externalMesh.NDP3Size - 0x02 + (externalMesh.GroupCount * 4);
+            byte[] size = BigBitConverter.GetBytes(externalMesh.NDP3Size);
+            byte[] fileSize = BigBitConverter.GetBytes(fileSizeInt - 0x08);
+            file1Bytes[ndp3Start - 3] = size[1];
+            file1Bytes[ndp3Start - 2] = size[2];
+            file1Bytes[ndp3Start - 1] = size[3];
+            file1Bytes[ndp3Start - (header - 1)] = fileSize[1];
+            file1Bytes[ndp3Start - (header - 2)] = fileSize[2];
+            file1Bytes[ndp3Start - (header - 3)] = fileSize[3];
             file1Bytes.AddRange(temp);
         }
         public static List<byte> FixGroupBytes(int index1, NUD mesh2)
@@ -224,16 +242,67 @@ namespace StickyFingers
 
             if (groups1 >= groups2)
             {
-                for (int x = 0; x < groups2; x++)
+                if (nudOpen)
                 {
-                    newNud[groupStart + (x * 4)] = meshList1[index1].GroupBytes[x];
+                    newNud.Add(0x00);
+                    newNud.Add(BitConverter.GetBytes(groups2)[0]);
+                    for (int x = 0; x < groups2; x++)
+                    {
+                        newNud.Add(0x00);
+                        newNud.Add(0x00);
+                        newNud.Add(0x00);
+                        newNud.Add(meshList1[index1].GroupBytes[x]);
+                    }
+                }
+                else
+                {
+                    for (int x = 0; x < groups2; x++)
+                    {
+                        newNud[groupStart + (x * 4)] = meshList1[index1].GroupBytes[x];
+                    }
                 }
             }
-            else // This technically works but might not do so in the game;
-            {    // needs a function to get the group bytes from other meshes
-                for (int x = 0; x < groups1; x++)
+            else // This gets the groups it can from the old mesh and
+            {    // adds the rest from the mesh with the most groups
+                if (nudOpen)
                 {
-                    newNud[groupStart + (x * 4)] = meshList1[index1].GroupBytes[x];
+                    newNud.Add(0x00);
+                    newNud.Add(BitConverter.GetBytes(groups2)[0]);
+                    for (int x = 0; x < groups1; x++)
+                    {
+                        newNud.Add(0x00);
+                        newNud.Add(0x00);
+                        newNud.Add(0x00);
+                        newNud.Add(meshList1[index1].GroupBytes[x]);
+                    }
+                    if (group1Bytes.Count >= groups2)
+                    {
+                        for (int x = 0; x < groups2 - groups1; x++)
+                        {
+                            newNud.Add(0x00);
+                            newNud.Add(0x00);
+                            newNud.Add(0x00);
+                            newNud.Add(group1Bytes[x + groups1]);
+                        }
+                    }
+                    else MessageBox.Show($"Some end bytes need manual fixing...", $"Warning");
+                }
+                else
+                {
+                    int i = 0;
+                    for (int x = 0; x < groups1; x++)
+                    {
+                        newNud[groupStart + (x * 4)] = meshList1[index1].GroupBytes[x];
+                        i = x;
+                    }
+                    if (group1Bytes.Count >= groups2)
+                    {
+                        for (int x = i; x < groups2 - groups1; x++)
+                        {
+                            newNud[groupStart + ((x + 1) * 4)] = group1Bytes[x + groups1];
+                        }
+                    }
+                    else MessageBox.Show($"Some end bytes need manual fixing...", $"Warning");
                 }
             }
             return newNud;

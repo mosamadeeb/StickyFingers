@@ -18,6 +18,7 @@ namespace StickyFingers
         public static bool noesisStarted = false;
         public static List<byte> file1Bytes;
         public static List<byte> file2Bytes;
+        public static List<byte> group1Bytes;
         public static List<int> searchResults;
         public static List<NUD> meshList1;
         public static List<NUD> meshList2;
