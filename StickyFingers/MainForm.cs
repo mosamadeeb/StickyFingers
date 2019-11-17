@@ -180,10 +180,11 @@ namespace StickyFingers
         }
         private void ReplaceButton_Click(object sender, EventArgs e)
         {
+            FileInfo fileName = new FileInfo(xfbin1Path);
             if (nudOpen) ReplaceExternalMesh(mesh1Box.SelectedIndex);
             else ReplaceMesh(mesh1Box.SelectedIndex, mesh2Box.SelectedIndex);
-            File.WriteAllBytes("new.xfbin", file1Bytes.ToArray());
-            MessageBox.Show($"File saved as \"new.xfbin\" in the program's directory.", $"Success");
+            File.WriteAllBytes(fileName.Name, file1Bytes.ToArray());
+            MessageBox.Show($"File saved as \"" + fileName.Name + "\" in the program's directory.", $"Success");
         }
     }
 }

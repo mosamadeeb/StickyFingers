@@ -16,6 +16,7 @@ namespace StickyFingers
         public static bool xfbin2Open;
         public static bool nudOpen;
         public static bool noesisStarted = false;
+        public static bool allGroupBytes = false; // Future option for alternative end bytes fixing
         public static List<byte> file1Bytes;
         public static List<byte> file2Bytes;
         public static List<byte> group1Bytes;
@@ -26,6 +27,7 @@ namespace StickyFingers
         public static int meshCount1;
         public static int meshCount2;
         public static Process Noesis;
+        public static List<int> BoneIDs = new List<int>();
 
         public static string ProgramVersion
         {
@@ -63,6 +65,14 @@ namespace StickyFingers
         public List<byte> VertFile { get; set; }
         public List<byte> NudFile { get; set; }
         public List<byte> GroupBytes { get; set; }
+        public List<BoneBytes> Bones { get; set; }
+        public int MaxBone { get; set; }
+    }
 
+    public class BoneBytes
+    {
+        public int Id1 { get; set; }
+        public int Id2 { get; set; }
+        public int Id3 { get; set; }
     }
 }
