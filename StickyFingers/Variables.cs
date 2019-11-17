@@ -19,7 +19,8 @@ namespace StickyFingers
         public static bool allGroupBytes = false; // Future option for alternative end bytes fixing
         public static List<byte> file1Bytes;
         public static List<byte> file2Bytes;
-        public static List<byte> group1Bytes;
+        public static List<Group> xfbin1Groups;
+        public static List<Group> xfbin2Groups;
         public static List<int> searchResults;
         public static List<NUD> meshList1;
         public static List<NUD> meshList2;
@@ -64,8 +65,9 @@ namespace StickyFingers
         public List<byte> UVFile { get; set; }
         public List<byte> VertFile { get; set; }
         public List<byte> NudFile { get; set; }
-        public List<byte> GroupBytes { get; set; }
+        public List<Group> GroupBytes { get; set; }
         public List<BoneBytes> Bones { get; set; }
+        public List<Polygon> Polygons { get; set; }
         public int MaxBone { get; set; }
     }
 
@@ -74,5 +76,21 @@ namespace StickyFingers
         public int Id1 { get; set; }
         public int Id2 { get; set; }
         public int Id3 { get; set; }
+    }
+
+    public class Polygon
+    {
+        public int VertCount { get; set; }
+        public int FormatByte { get; set; }
+        public int MeshFormat { get; set; }
+        public int BoneOffset { get; set; }
+        public string MatName { get; set; }
+        public byte EndByte { get; set; }
+    }
+
+    public class Group
+    {
+        public string Name { get; set; }
+        public byte EndByte { get; set; }
     }
 }

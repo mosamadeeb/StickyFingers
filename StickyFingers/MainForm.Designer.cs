@@ -62,6 +62,10 @@
             this.groups1Label = new System.Windows.Forms.Label();
             this.groupsLabel2 = new System.Windows.Forms.Label();
             this.groups2Label = new System.Windows.Forms.Label();
+            this.groupsBox = new System.Windows.Forms.ListView();
+            this.groupsBoxLabel = new System.Windows.Forms.Label();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // xfbin1Box
@@ -415,11 +419,45 @@
             this.groups2Label.Text = "   ";
             this.groups2Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // groupsBox
+            // 
+            this.groupsBox.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2});
+            this.groupsBox.HideSelection = false;
+            this.groupsBox.Location = new System.Drawing.Point(322, 76);
+            this.groupsBox.Name = "groupsBox";
+            this.groupsBox.Size = new System.Drawing.Size(172, 135);
+            this.groupsBox.TabIndex = 62;
+            this.groupsBox.UseCompatibleStateImageBehavior = false;
+            this.groupsBox.View = System.Windows.Forms.View.Details;
+            // 
+            // groupsBoxLabel
+            // 
+            this.groupsBoxLabel.AutoSize = true;
+            this.groupsBoxLabel.Location = new System.Drawing.Point(225, 79);
+            this.groupsBoxLabel.Name = "groupsBoxLabel";
+            this.groupsBoxLabel.Size = new System.Drawing.Size(95, 17);
+            this.groupsBoxLabel.TabIndex = 63;
+            this.groupsBoxLabel.Text = "Xfbin Groups:";
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Name";
+            this.columnHeader1.Width = 57;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Byte";
+            this.columnHeader2.Width = 40;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(820, 450);
+            this.Controls.Add(this.groupsBoxLabel);
+            this.Controls.Add(this.groupsBox);
             this.Controls.Add(this.groupsLabel2);
             this.Controls.Add(this.groups2Label);
             this.Controls.Add(this.groupsLabel1);
@@ -495,6 +533,10 @@
         private System.Windows.Forms.Label groups1Label;
         private System.Windows.Forms.Label groupsLabel2;
         private System.Windows.Forms.Label groups2Label;
+        private System.Windows.Forms.ListView groupsBox;
+        private System.Windows.Forms.Label groupsBoxLabel;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
     }
 }
 

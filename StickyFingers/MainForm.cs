@@ -43,6 +43,12 @@ namespace StickyFingers
                     {
                         mesh1Box.Items.Add(nameInList.MeshName);
                     }
+                    foreach (var group in xfbin1Groups)
+                    {
+                        ListViewItem item = new ListViewItem(group.Name);
+                        item.SubItems.Add(group.EndByte.ToString());
+                        groupsBox.Items.Add(item);
+                    }
                     mesh1Box.SelectedIndex = 0;
                     mesh1Box.Focus(); 
                 }
@@ -99,7 +105,7 @@ namespace StickyFingers
                 group1Label.Text = meshList1[x].GroupCount.ToString();
                 foreach (var group in meshList1[x].GroupBytes)
                 {
-                    groupsText = groupsText + group.ToString() + ", ";
+                    groupsText = groupsText + group.EndByte.ToString() + ", ";
                 }
                 groups1Label.Text = groupsText.Remove(groupsText.Length - 2);
                 mat1Label.Text = meshList1[x].Material;
@@ -123,7 +129,7 @@ namespace StickyFingers
                     group2Label.Text = meshList2[x].GroupCount.ToString();
                     foreach (var group in meshList2[x].GroupBytes)
                     {
-                        groupsText = groupsText + group.ToString() + ", ";
+                        groupsText = groupsText + group.EndByte.ToString() + ", ";
                     }
                     groups2Label.Text = groupsText.Remove(groupsText.Length - 2);
                     mat2Label.Text = meshList2[x].Material;
@@ -147,7 +153,7 @@ namespace StickyFingers
                 {
                     file1Bytes.Clear();
                     meshList1.Clear();
-                    group1Bytes.Clear();
+                    xfbin1Groups.Clear();
                 }
                 xfbin1Open = false;
             }
@@ -165,6 +171,7 @@ namespace StickyFingers
                 {
                     file2Bytes.Clear();
                     meshList2.Clear();
+                    xfbin2Groups.Clear();
                 }
                 xfbin2Open = false;
                 nudOpen = false;

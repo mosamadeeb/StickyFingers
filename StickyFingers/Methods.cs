@@ -35,28 +35,25 @@ namespace StickyFingers
                 MessageBox.Show($"Xfbin doesn't contain any meshes. Please select a valid xfbin.", $"Error");
                 return false;
             }
+
+            //int end = SearchForByte("trall", fileBytes, 0, fileBytes.Length, 0)[0];
+            //int start = SearchForByte("t_", fileBytes, end, 0, 0)[0];
+            //byte[] groupNames = new byte[end - start];
+            //Array.Copy(fileBytes, start, groupNames, 0, end - start);
             for (int i = 0; i < searchResults.Count; i++)
             {
                 meshList.Add(LoadNud(fileBytes, searchResults[i], true));
                 meshCount++;
             }
-            int groupNo = 0;
+            //int groupNo = 0;
+            List<Group> groupBytes = new List<Group>();
             foreach (NUD mesh in meshList)
             {
-                if (mesh.GroupCount > groupNo)
+                for (int a = 0; a < mesh.GroupCount; a++)
                 {
-                    groupNo = mesh.GroupCount;
-                    group1Bytes = mesh.GroupBytes;
+                    if (!groupBytes.Any(g => g.EndByte == mesh.GroupBytes[a].EndByte))
+                        groupBytes.Add(mesh.GroupBytes[a]);
                 }
-                if (allGroupBytes)
-                {
-                    for (int x = 0; x < mesh.GroupCount; x++)
-                    {
-                        if (!group1Bytes.Contains(mesh.GroupBytes[x]))
-                            group1Bytes.Add(mesh.GroupBytes[x]);
-                    }
-                }
-                group1Bytes = group1Bytes.OrderBy(l => l).ToList();
             }
             List<int> BoneIDs3 = BoneIDs;
             if (xfbinNo == 1)
@@ -66,6 +63,7 @@ namespace StickyFingers
                 file1Bytes = fileBytes.ToList();
                 meshCount1 = meshCount;
                 meshList1 = meshList;
+                xfbin1Groups = groupBytes;
             }
             else if (xfbinNo == 2)
             {
@@ -74,6 +72,7 @@ namespace StickyFingers
                 file2Bytes = fileBytes.ToList();
                 meshCount2 = meshCount;
                 meshList2 = meshList;
+                xfbin2Groups = groupBytes;
             }
             return true;
         }
@@ -88,9 +87,9 @@ namespace StickyFingers
             int sec1Index = x + 0x30;
             int groupCount = fileBytes[sec1Index + 0x2B];
             int vertCount = 0;
-            int formatByte = 0;
             byte[] nudFile;
-            List<byte> groupBytes = new List<byte>();
+            List<Group> groupBytes = new List<Group>();
+            List<Polygon> poly = new List<Polygon>();
             if (header)
             {
                 if (fileBytes[x - 4] != 0x00)
@@ -118,10 +117,26 @@ namespace StickyFingers
             }
             for (int a = 0; a < groupCount; a++)
             {
-                vertCount += BigBitConverter.ToInt16(nudFile, sec1Index + 0x3C + (a * 0x30));
-                formatByte = nudFile[sec1Index + 0x3E + (a * 0x30)];
+                int matIndexp = x + BigBitConverter.ToInt16(nudFile, sec1Index + 0x42 + (a * 0x30));
+                string matNamep = BitConverter.ToString(nudFile, matIndexp + 1, 3).Replace('-', ' ');
+                if (matNamep[1] == '0') matNamep = matNamep.TrimStart('0', '0', ' ');
+                poly.Add(new Polygon
+                {
+                    VertCount = BigBitConverter.ToInt16(nudFile, sec1Index + 0x3C + (a * 0x30)),
+                    FormatByte = nudFile[sec1Index + 0x3E + (a * 0x30)],
+                    MatName = matNamep,
+                    EndByte = 0
+                });
+                vertCount += poly[a].VertCount;
                 if (header)
-                    groupBytes.Add(nudFile[(x - 1) + ndp3Size + 0x06 + (a * 4)]);
+                {
+                    poly[a].EndByte = nudFile[(x - 1) + ndp3Size + 0x06 + (a * 4)];
+                    groupBytes.Add(new Group
+                    {
+                        EndByte = poly[a].EndByte,
+                        Name = ""
+                    });
+                }
             }
 
             int sec1Size = BigBitConverter.ToInt32(nudFile, x + 0x10);
@@ -141,61 +156,65 @@ namespace StickyFingers
             string meshName = Encoding.Default.GetString(nudFile.ToArray(), vertIndex + vertSize, 0x20);
             meshName = meshName.Remove(meshName.IndexOf("\0"));
 
-            int meshFormat;
-            int boneOffset = 0;
-            switch (formatByte)
+            string meshFormatName = "";
+            foreach (Polygon p in poly)
             {
-                case 0x06: // Storm teeth/eyes
-                    meshFormat = 0x1C;
-                    break;
-                case 0x20: // Storm effects (not ready)
-                    meshFormat = 0x20;
-                    break;
-                case 0x07: // JoJo teeth
-                    meshFormat = 0x2C;
-                    break;
-                case 0x30: // JoJo teeth (not ready)
-                    meshFormat = 0x30;
-                    break;
-                case 0x11: // Storm most meshes + JoJo eyes
-                    meshFormat = 0x40;
-                    boneOffset = 0x20;
-                    break;
-                case 0x13: // JoJo most meshes
-                    meshFormat = 0x60;
-                    boneOffset = 0x40;
-                    break;
-                default:
-                    meshFormat = 0;
-                    break;
+                switch (p.FormatByte)
+                {
+                    case 0x06: // Storm teeth/eyes
+                        p.MeshFormat = 0x1C;
+                        break;
+                    case 0x20: // Storm effects (not ready)
+                        p.MeshFormat = 0x20;
+                        break;
+                    case 0x07: // JoJo teeth
+                        p.MeshFormat = 0x2C;
+                        break;
+                    case 0x30: // JoJo teeth (not ready)
+                        p.MeshFormat = 0x30;
+                        break;
+                    case 0x11: // Storm most meshes + JoJo eyes
+                        p.MeshFormat = 0x40;
+                        p.BoneOffset = 0x20;
+                        break;
+                    case 0x13: // JoJo most meshes
+                        p.MeshFormat = 0x60;
+                        p.BoneOffset = 0x40;
+                        break;
+                    default:
+                        if (vertSize == 0)
+                            p.MeshFormat = uvSize / vertCount;
+                        else p.MeshFormat = vertSize / vertCount;
+                        break;
+                }
+                // Only last format for now
+                meshFormatName = "0x" + BitConverter.ToString(BitConverter.GetBytes(p.MeshFormat)).Substring(0, 2);
             }
-            if (meshFormat == 0)
-            {
-                if (vertSize == 0)
-                    meshFormat = uvSize / vertCount;
-                else meshFormat = vertSize / vertCount;
-            }
-            string meshFormatName = "0x" + BitConverter.ToString(BitConverter.GetBytes(meshFormat)).Substring(0, 2);
 
+            int vertSum = 0;
             int maxBone = 0;
             List<BoneBytes> bones = new List<BoneBytes>();
-            if (boneOffset != 0)
+            for (int a = 0; a < poly.Count; a++)
             {
-                for (int i = 0; i < vertCount; i++)
+                if (poly[a].BoneOffset != 0)
                 {
-                    BoneBytes bytes = new BoneBytes()
+                    for (int i = 0; i < poly[a].VertCount; i++)
                     {
-                        Id1 = nudFile[vertIndex + boneOffset + 0x03 + (i * meshFormat)],
-                        Id2 = nudFile[vertIndex + boneOffset + 0x07 + (i * meshFormat)],
-                        Id3 = nudFile[vertIndex + boneOffset + 0x0B + (i * meshFormat)]
-                    };
-                    int IdMax1 = Math.Max(bytes.Id1, bytes.Id2);
-                    int IdMax2 = Math.Max(bytes.Id3, IdMax1);
-                    if (IdMax2 > maxBone) maxBone = IdMax2;
-                    if (!BoneIDs.Contains(bytes.Id1)) BoneIDs.Add(bytes.Id1);
-                    if (!BoneIDs.Contains(bytes.Id2)) BoneIDs.Add(bytes.Id2);
-                    if (!BoneIDs.Contains(bytes.Id3)) BoneIDs.Add(bytes.Id3);
-                    bones.Add(bytes);
+                        BoneBytes bytes = new BoneBytes()
+                        {
+                            Id1 = nudFile[vertIndex + vertSum + poly[a].BoneOffset + 0x03 + (i * poly[a].MeshFormat)],
+                            Id2 = nudFile[vertIndex + vertSum + poly[a].BoneOffset + 0x07 + (i * poly[a].MeshFormat)],
+                            Id3 = nudFile[vertIndex + vertSum + poly[a].BoneOffset + 0x0B + (i * poly[a].MeshFormat)]
+                        };
+                        int IdMax1 = Math.Max(bytes.Id1, bytes.Id2);
+                        int IdMax2 = Math.Max(bytes.Id3, IdMax1);
+                        if (IdMax2 > maxBone) maxBone = IdMax2;
+                        if (!BoneIDs.Contains(bytes.Id1)) BoneIDs.Add(bytes.Id1);
+                        if (!BoneIDs.Contains(bytes.Id2)) BoneIDs.Add(bytes.Id2);
+                        if (!BoneIDs.Contains(bytes.Id3)) BoneIDs.Add(bytes.Id3);
+                        bones.Add(bytes);
+                    }
+                    vertSum += poly[a].VertCount * poly[a].MeshFormat;
                 }
             }
             BoneIDs = BoneIDs.OrderBy(l => l).ToList();
@@ -223,7 +242,8 @@ namespace StickyFingers
                 NudFile = nudFile.ToList(),
                 GroupBytes = groupBytes,
                 Bones = bones,
-                MaxBone = maxBone
+                MaxBone = maxBone,
+                Polygons = poly
             };
         }
         public static void ExportNud(List<byte> fileBytes, List<NUD> meshList, int index)
@@ -292,25 +312,29 @@ namespace StickyFingers
                         newNud.Add(0x00);
                         newNud.Add(0x00);
                         newNud.Add(0x00);
-                        newNud.Add(meshList1[index1].GroupBytes[x]);
+                        newNud.Add(meshList1[index1].GroupBytes[x].EndByte); // Needs some changes
                     }
                 }
                 else
                 {
                     for (int x = 0; x < groups2; x++)
                     {
-                        newNud[groupStart + (x * 4)] = meshList1[index1].GroupBytes[x];
+                        newNud[groupStart + (x * 4)] = meshList1[index1].GroupBytes[x].EndByte; // Needs some changes
                     }
                 }
             }
             else // This gets the groups it can from the old mesh and
             {    // adds the rest from the mesh with the most groups
-                List<byte> tempgroup1Bytes = group1Bytes;
+                List<byte> tempgroup1Bytes = new List<byte>();
+                foreach (Group g in xfbin1Groups)
+                {
+                    tempgroup1Bytes.Add(g.EndByte);  // Needs some changes
+                }
                 if (allGroupBytes)
                 {
                     for (int x = 0; x < groups1; x++)
                     {
-                        tempgroup1Bytes.Remove(meshList1[index1].GroupBytes[x]);
+                        tempgroup1Bytes.Remove(meshList1[index1].GroupBytes[x].EndByte); // Needs some changes
                     }
                 }
                 if (nudOpen)
@@ -322,7 +346,7 @@ namespace StickyFingers
                         newNud.Add(0x00);
                         newNud.Add(0x00);
                         newNud.Add(0x00);
-                        newNud.Add(meshList1[index1].GroupBytes[x]);
+                        newNud.Add(meshList1[index1].GroupBytes[x].EndByte); // Needs some changes
                     }
                     if (tempgroup1Bytes.Count >= groups2)
                     {
@@ -341,7 +365,7 @@ namespace StickyFingers
                     int i = 0;
                     for (int x = 0; x < groups1; x++)
                     {
-                        newNud[groupStart + (x * 4)] = meshList1[index1].GroupBytes[x];
+                        newNud[groupStart + (x * 4)] = meshList1[index1].GroupBytes[x].EndByte; // Needs some changes
                         i = x;
                     }
                     if (tempgroup1Bytes.Count >= groups2)
