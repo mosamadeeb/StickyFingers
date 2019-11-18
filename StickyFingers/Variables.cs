@@ -30,6 +30,8 @@ namespace StickyFingers
         public static int nameSizeOffset;
         public static Process Noesis;
         public static List<int> BoneIDs = new List<int>();
+        public static List<string> BoneNames;
+        public static string modelName;
 
         public static string ProgramVersion
         {

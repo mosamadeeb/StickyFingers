@@ -68,6 +68,7 @@
             this.groupsBoxLabel = new System.Windows.Forms.Label();
             this.bones1Button = new System.Windows.Forms.Button();
             this.openBones1Dialog = new System.Windows.Forms.OpenFileDialog();
+            this.exportB1Button = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // xfbin1Box
@@ -456,7 +457,6 @@
             // 
             // bones1Button
             // 
-            this.bones1Button.Enabled = false;
             this.bones1Button.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.542858F);
             this.bones1Button.Location = new System.Drawing.Point(499, 134);
             this.bones1Button.Margin = new System.Windows.Forms.Padding(2);
@@ -465,7 +465,7 @@
             this.bones1Button.TabIndex = 64;
             this.bones1Button.Text = "Load bones";
             this.bones1Button.UseVisualStyleBackColor = true;
-            this.bones1Button.Click += new System.EventHandler(this.bones1Button_Click);
+            this.bones1Button.Click += new System.EventHandler(this.Bones1Button_Click);
             // 
             // openBones1Dialog
             // 
@@ -473,10 +473,24 @@
             this.openBones1Dialog.Filter = "XFBIN files|*.xfbin";
             this.openBones1Dialog.Title = "Open \"mot1\" Animations File";
             // 
+            // exportB1Button
+            // 
+            this.exportB1Button.Enabled = false;
+            this.exportB1Button.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.542858F);
+            this.exportB1Button.Location = new System.Drawing.Point(499, 180);
+            this.exportB1Button.Margin = new System.Windows.Forms.Padding(2);
+            this.exportB1Button.Name = "exportB1Button";
+            this.exportB1Button.Size = new System.Drawing.Size(98, 31);
+            this.exportB1Button.TabIndex = 65;
+            this.exportB1Button.Text = "Export bones";
+            this.exportB1Button.UseVisualStyleBackColor = true;
+            this.exportB1Button.Click += new System.EventHandler(this.ExportB1Button_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.ClientSize = new System.Drawing.Size(820, 450);
+            this.Controls.Add(this.exportB1Button);
             this.Controls.Add(this.bones1Button);
             this.Controls.Add(this.groupsBoxLabel);
             this.Controls.Add(this.groupsBox);
@@ -561,6 +575,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.Button bones1Button;
         private System.Windows.Forms.OpenFileDialog openBones1Dialog;
+        private System.Windows.Forms.Button exportB1Button;
     }
 }
 

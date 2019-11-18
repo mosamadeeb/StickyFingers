@@ -195,11 +195,21 @@ namespace StickyFingers
             File.WriteAllBytes(fileName.Name, file1Bytes.ToArray());
             MessageBox.Show($"File saved as \"" + fileName.Name + "\" in the program's directory.", $"Success");
         }
-        private void bones1Button_Click(object sender, EventArgs e)
+        private void Bones1Button_Click(object sender, EventArgs e)
         {
             if (openBones1Dialog.ShowDialog() == DialogResult.OK)
             {
+                LoadBones(1, openBones1Dialog.FileName);
+                exportB1Button.Enabled = true;
+            }
+        }
 
+        private void ExportB1Button_Click(object sender, EventArgs e)
+        {
+            if (BoneNames.Any())
+            {
+                File.WriteAllLines(modelName + "_bones.txt", BoneNames);
+                MessageBox.Show($"File saved as \"" + modelName + "_bones.txt" + "\" in the program's directory.", $"Success");
             }
         }
     }

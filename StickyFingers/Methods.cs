@@ -37,7 +37,7 @@ namespace StickyFingers
                 return false;
             }
 
-            // This huge chunk is for getting the group names + arranging them
+            // Find the group names + arrange them
             if (SearchForByte("trall", fileBytes, 0, fileBytes.Length, 1).Any())
             {
                 int end = SearchForByte("trall", fileBytes, 0, fileBytes.Length, 1)[0];
@@ -56,7 +56,7 @@ namespace StickyFingers
                             {
                                 boneStart = end - t - n + 1;
                                 modelName = Encoding.Default.GetString(fileBytes, boneStart, 0x20);
-                                modelName = modelName.Remove(modelName.IndexOf("t0 trall")) + "bod1";
+                                modelName = modelName.Remove(modelName.IndexOf("t0 trall")) + "bod1"; // xchr01bod1
                                 n = 0x21;
                             }
                         }
@@ -119,6 +119,17 @@ namespace StickyFingers
                 }
             }
             List<int> BoneIDs3 = BoneIDs;
+
+            // Set the bone names obtained from the animation file
+            if (BoneNames.Any())
+            {
+                List<string> names = new List<string>();
+                for (int b = 0; b < BoneIDs.Last(); b++)
+                {
+                    names.Add(BoneNames[b]);
+                }
+                BoneNames = names;
+            }
 
             // Dynamically set the properties for each xfbin
             if (xfbinNo == 1)
@@ -491,6 +502,75 @@ namespace StickyFingers
                 }
             }
             return newNud;
+        }
+        // Read bone names from an animation file
+        public static void LoadBones(int xfbinNo, string motPath)
+        {
+            byte[] fileBytes = File.ReadAllBytes(motPath);
+            List<string> Lines = new List<string>();
+
+            if (SearchForByte("trall", fileBytes, 0, fileBytes.Length, 1).Any())
+            {
+                int end = SearchForByte("trall", fileBytes, 0, fileBytes.Length, 1)[0];
+                int t = 0x20;
+                int boneStart = 0;
+                int boneEnd = 0;
+                while (t <= 0x20 && t > 0)
+                {
+                    modelName = Encoding.Default.GetString(fileBytes, end - t, 0x20);
+                    modelName = modelName.Remove(modelName.IndexOf("\0"));
+                    if (modelName.Contains("trall"))
+                    {
+                        for (int n = 0; n <= 0x20; n++)
+                        {
+                            if (fileBytes[end - t - n] == 0x00)
+                            {
+                                boneStart = end - t - n + 1;
+                                modelName = Encoding.Default.GetString(fileBytes, boneStart, 0x20);
+                                modelName = modelName.Remove(modelName.IndexOf("t0 trall")); // xchr01
+                                n = 0x21;
+                            }
+                        }
+                        t = 0x21;
+                    }
+                    else t -= 0x08;
+                }
+                int x = 0;
+                bool skipped = false;
+                for (int n = 0; n >= 0; n++)
+                {
+                    boneEnd = SearchForByte(modelName, fileBytes, boneStart + x, fileBytes.Length, 1)[0];
+                    x = boneEnd - boneStart + 1;
+                    if (fileBytes[boneEnd + modelName.Length + 2] != 0x20) // space
+                    {
+                        if (skipped)
+                        {
+                            n = -2;
+                        }
+                        else skipped = true;
+                    }
+                }
+
+                byte[] boneNames = new byte[boneEnd - boneStart];
+                Array.Copy(fileBytes, boneStart, boneNames, 0, boneEnd - boneStart);
+                for (int o = 0; o < boneNames.Length; o++)
+                {
+                    if (boneNames[o] == 0x00)
+                    {
+                        boneNames[o] = 0x0A;
+                    }
+                }
+                string tx = Encoding.ASCII.GetString(boneNames);
+                Lines = tx.Split('\n').ToList();
+                Lines.RemoveAt(1);
+                Lines.RemoveAt(Lines.Count - 1);
+                foreach (string s in Lines.ToList())
+                {
+                    Lines[Lines.IndexOf(s)] = s.Remove(0, modelName.Length + 3);
+                }
+                BoneNames = Lines;
+            }
+            else MessageBox.Show($"Xfbin doesn't contain bone names. Please select a valid xfbin.", $"Error");
         }
         public static List<int> SearchForByte(string search, byte[] file, int start, int end, int count)
         {
