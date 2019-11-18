@@ -27,6 +27,7 @@ namespace StickyFingers
         public static NUD externalMesh;
         public static int meshCount1;
         public static int meshCount2;
+        public static int nameSizeOffset;
         public static Process Noesis;
         public static List<int> BoneIDs = new List<int>();
 

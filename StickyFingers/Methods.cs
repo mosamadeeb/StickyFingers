@@ -344,6 +344,7 @@ namespace StickyFingers
             file1Bytes.CopyTo(fileEnd, temp, 0, xfbinEnd);
             file1Bytes.RemoveRange(ndp3Start, file1Bytes.Count - ndp3Start);
             file1Bytes.AddRange(FixGroupBytes(index1, externalMesh));
+            externalMesh.NDP3Size += nameSizeOffset;
             int header = meshList1[index1].HeaderSize;
             int fileSizeInt = header + externalMesh.NDP3Size - 0x02 + (externalMesh.GroupCount * 4);
             byte[] size = BigBitConverter.GetBytes(externalMesh.NDP3Size);
@@ -355,17 +356,63 @@ namespace StickyFingers
             file1Bytes[ndp3Start - (header - 2)] = fileSize[2];
             file1Bytes[ndp3Start - (header - 3)] = fileSize[3];
             file1Bytes.AddRange(temp);
+            nameSizeOffset = 0;
         }
         public static List<byte> FixGroupBytes(int index1, NUD mesh2)
         {
-            int groups1 = meshList1[index1].GroupCount;
-            int groups2 = mesh2.GroupCount;
-            int groupStart = mesh2.HeaderSize + mesh2.NDP3Size + 0x05;
             List<byte> newNud = mesh2.NudFile;
+
+            // Replace mesh name (might need manual size fix if name sizes are different)
+            int nameIndex = mesh2.VertIndex + mesh2.VertSize;
+            string meshName = meshList1[index1].MeshName;
+            int length1 = 0x10;
+            int length2 = 0x10;
+            if (meshName.Length >= 0x10)
+                length1 = 0x20;
+            else if (meshName.Length >= 0x20)
+                length1 = 0x30;
+            if (mesh2.MeshName.Length >= 0x10)
+                length2 = 0x20;
+            else if (mesh2.MeshName.Length >= 0x20)
+                length2 = 0x30;
+            if (length1 < length2)
+            {
+                byte[] temp = new byte[newNud.Count - (nameIndex + length2)];
+                newNud.CopyTo(nameIndex + length2, temp, 0, newNud.Count - (nameIndex + length2));
+                newNud.RemoveRange(nameIndex + length1, length2 - length1);
+                newNud.AddRange(temp);
+                nameSizeOffset = -(length2 - length1);
+            }
+            else if (length1 > length2)
+            {
+                byte[] empty = new byte[length1 - length2];
+                for (int x = 0; x < empty.Length; x++)
+                {
+                    empty[x] = 0x00;
+                }
+                byte[] temp = new byte[newNud.Count - (nameIndex + length2)];
+                newNud.CopyTo(nameIndex + length2, temp, 0, newNud.Count - (nameIndex + length2));
+                newNud.RemoveRange(nameIndex + length2, length1 - length2);
+                newNud.AddRange(empty);
+                newNud.AddRange(temp);
+                nameSizeOffset = length1 - length2;
+            }
+            for (int x = 0; x < length1; x++)
+            {
+                newNud[nameIndex + x] = 0x00;
+            }
+            for (int x = 0; x < meshName.Length; x++)
+            {
+                newNud[nameIndex + x] = BitConverter.GetBytes(meshName[x])[0];
+            }
 
             // Change mesh index
             newNud[0x07] = BitConverter.GetBytes(meshList1[index1].MeshIndex)[0];
 
+            // Fix group bytes (could use a rewrite)
+            int groups1 = meshList1[index1].GroupCount;
+            int groups2 = mesh2.GroupCount;
+            int groupStart = mesh2.HeaderSize + mesh2.NDP3Size + 0x05;
             if (groups1 >= groups2)
             {
                 if (nudOpen)
