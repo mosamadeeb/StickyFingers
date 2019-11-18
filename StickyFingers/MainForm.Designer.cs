@@ -63,9 +63,11 @@
             this.groupsLabel2 = new System.Windows.Forms.Label();
             this.groups2Label = new System.Windows.Forms.Label();
             this.groupsBox = new System.Windows.Forms.ListView();
-            this.groupsBoxLabel = new System.Windows.Forms.Label();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.groupsBoxLabel = new System.Windows.Forms.Label();
+            this.bones1Button = new System.Windows.Forms.Button();
+            this.openBones1Dialog = new System.Windows.Forms.OpenFileDialog();
             this.SuspendLayout();
             // 
             // xfbin1Box
@@ -338,7 +340,7 @@
             // 
             this.exportNud1.Enabled = false;
             this.exportNud1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.542858F);
-            this.exportNud1.Location = new System.Drawing.Point(499, 148);
+            this.exportNud1.Location = new System.Drawing.Point(499, 88);
             this.exportNud1.Margin = new System.Windows.Forms.Padding(2);
             this.exportNud1.Name = "exportNud1";
             this.exportNud1.Size = new System.Drawing.Size(92, 31);
@@ -351,7 +353,7 @@
             // 
             this.exportNud2.Enabled = false;
             this.exportNud2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.542858F);
-            this.exportNud2.Location = new System.Drawing.Point(499, 332);
+            this.exportNud2.Location = new System.Drawing.Point(499, 272);
             this.exportNud2.Margin = new System.Windows.Forms.Padding(2);
             this.exportNud2.Name = "exportNud2";
             this.exportNud2.Size = new System.Drawing.Size(92, 31);
@@ -421,16 +423,27 @@
             // 
             // groupsBox
             // 
+            this.groupsBox.Alignment = System.Windows.Forms.ListViewAlignment.Left;
             this.groupsBox.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2});
             this.groupsBox.HideSelection = false;
-            this.groupsBox.Location = new System.Drawing.Point(322, 76);
+            this.groupsBox.Location = new System.Drawing.Point(326, 76);
             this.groupsBox.Name = "groupsBox";
-            this.groupsBox.Size = new System.Drawing.Size(172, 135);
+            this.groupsBox.Size = new System.Drawing.Size(153, 135);
             this.groupsBox.TabIndex = 62;
             this.groupsBox.UseCompatibleStateImageBehavior = false;
             this.groupsBox.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Name";
+            this.columnHeader1.Width = 80;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Byte";
+            this.columnHeader2.Width = 44;
             // 
             // groupsBoxLabel
             // 
@@ -441,21 +454,30 @@
             this.groupsBoxLabel.TabIndex = 63;
             this.groupsBoxLabel.Text = "Xfbin Groups:";
             // 
-            // columnHeader1
+            // bones1Button
             // 
-            this.columnHeader1.Text = "Name";
-            this.columnHeader1.Width = 57;
+            this.bones1Button.Enabled = false;
+            this.bones1Button.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.542858F);
+            this.bones1Button.Location = new System.Drawing.Point(499, 134);
+            this.bones1Button.Margin = new System.Windows.Forms.Padding(2);
+            this.bones1Button.Name = "bones1Button";
+            this.bones1Button.Size = new System.Drawing.Size(92, 31);
+            this.bones1Button.TabIndex = 64;
+            this.bones1Button.Text = "Load bones";
+            this.bones1Button.UseVisualStyleBackColor = true;
+            this.bones1Button.Click += new System.EventHandler(this.bones1Button_Click);
             // 
-            // columnHeader2
+            // openBones1Dialog
             // 
-            this.columnHeader2.Text = "Byte";
-            this.columnHeader2.Width = 40;
+            this.openBones1Dialog.DefaultExt = "xfbin";
+            this.openBones1Dialog.Filter = "XFBIN files|*.xfbin";
+            this.openBones1Dialog.Title = "Open \"mot1\" Animations File";
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.ClientSize = new System.Drawing.Size(820, 450);
+            this.Controls.Add(this.bones1Button);
             this.Controls.Add(this.groupsBoxLabel);
             this.Controls.Add(this.groupsBox);
             this.Controls.Add(this.groupsLabel2);
@@ -537,6 +559,8 @@
         private System.Windows.Forms.Label groupsBoxLabel;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.Button bones1Button;
+        private System.Windows.Forms.OpenFileDialog openBones1Dialog;
     }
 }
 

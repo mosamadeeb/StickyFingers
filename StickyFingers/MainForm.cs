@@ -46,7 +46,7 @@ namespace StickyFingers
                     foreach (var group in xfbin1Groups)
                     {
                         ListViewItem item = new ListViewItem(group.Name);
-                        item.SubItems.Add(group.EndByte.ToString());
+                        item.SubItems.Add(BitConverter.ToString(BitConverter.GetBytes(group.EndByte)).Substring(0, 2));
                         groupsBox.Items.Add(item);
                     }
                     mesh1Box.SelectedIndex = 0;
@@ -105,7 +105,7 @@ namespace StickyFingers
                 group1Label.Text = meshList1[x].GroupCount.ToString();
                 foreach (var group in meshList1[x].GroupBytes)
                 {
-                    groupsText = groupsText + group.EndByte.ToString() + ", ";
+                    groupsText = groupsText + BitConverter.ToString(BitConverter.GetBytes(group.EndByte)).Substring(0, 2) + ", ";
                 }
                 groups1Label.Text = groupsText.Remove(groupsText.Length - 2);
                 mat1Label.Text = meshList1[x].Material;
@@ -129,7 +129,7 @@ namespace StickyFingers
                     group2Label.Text = meshList2[x].GroupCount.ToString();
                     foreach (var group in meshList2[x].GroupBytes)
                     {
-                        groupsText = groupsText + group.EndByte.ToString() + ", ";
+                        groupsText = groupsText + BitConverter.ToString(BitConverter.GetBytes(group.EndByte)).Substring(0, 2) + ", ";
                     }
                     groups2Label.Text = groupsText.Remove(groupsText.Length - 2);
                     mat2Label.Text = meshList2[x].Material;
@@ -139,6 +139,7 @@ namespace StickyFingers
         }
         public void XfbinClose(int xfbinNo)
         {
+            BoneIDs.Clear();
             if (xfbinNo == 1)
             {
                 mesh1Box.Items.Clear();
@@ -154,6 +155,7 @@ namespace StickyFingers
                     file1Bytes.Clear();
                     meshList1.Clear();
                     xfbin1Groups.Clear();
+                    groupsBox.Items.Clear();
                 }
                 xfbin1Open = false;
             }
@@ -192,6 +194,13 @@ namespace StickyFingers
             else ReplaceMesh(mesh1Box.SelectedIndex, mesh2Box.SelectedIndex);
             File.WriteAllBytes(fileName.Name, file1Bytes.ToArray());
             MessageBox.Show($"File saved as \"" + fileName.Name + "\" in the program's directory.", $"Success");
+        }
+        private void bones1Button_Click(object sender, EventArgs e)
+        {
+            if (openBones1Dialog.ShowDialog() == DialogResult.OK)
+            {
+
+            }
         }
     }
 }

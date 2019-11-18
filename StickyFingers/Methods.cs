@@ -28,6 +28,7 @@ namespace StickyFingers
         {
             byte[] fileBytes = File.ReadAllBytes(xfbinPath);
             List<NUD> meshList = new List<NUD>();
+            List<string> Lines = new List<string>();
             int meshCount = 0;
             searchResults = SearchForByte("NDP3", fileBytes, 0, fileBytes.Length, 0);
             if (!searchResults.Any())
@@ -36,16 +37,71 @@ namespace StickyFingers
                 return false;
             }
 
-            //int end = SearchForByte("trall", fileBytes, 0, fileBytes.Length, 0)[0];
-            //int start = SearchForByte("t_", fileBytes, end, 0, 0)[0];
-            //byte[] groupNames = new byte[end - start];
-            //Array.Copy(fileBytes, start, groupNames, 0, end - start);
+            // This huge chunk is for getting the group names + arranging them
+            if (SearchForByte("trall", fileBytes, 0, fileBytes.Length, 1).Any())
+            {
+                int end = SearchForByte("trall", fileBytes, 0, fileBytes.Length, 1)[0];
+                string modelName = "";
+                int t = 0x20;
+                int boneStart = 0;
+                while (t <= 0x20 && t > 0)
+                {
+                    modelName = Encoding.Default.GetString(fileBytes, end - t, 0x20);
+                    modelName = modelName.Remove(modelName.IndexOf("\0"));
+                    if (modelName.Contains("trall"))
+                    {
+                        for (int n = 0; n <= 0x20; n++)
+                        {
+                            if (fileBytes[end - t - n] == 0x00)
+                            {
+                                boneStart = end - t - n + 1;
+                                modelName = Encoding.Default.GetString(fileBytes, boneStart, 0x20);
+                                modelName = modelName.Remove(modelName.IndexOf("t0 trall")) + "bod1";
+                                n = 0x21;
+                            }
+                        }
+                        t = 0x21;
+                    }
+                    else t -= 0x08;
+                }
+                int groupStart = 0;
+                int x = 0;
+                for (int n = 0; n >= 0; n++)
+                {
+                    groupStart = SearchForByte(modelName, fileBytes, boneStart - x, 0, 1)[0];
+                    x = boneStart - groupStart + 1;
+                    if (fileBytes[groupStart + modelName.Length] == 0)
+                        n = -2;
+                }
+                byte[] groupNames = new byte[boneStart - groupStart];
+                Array.Copy(fileBytes, groupStart, groupNames, 0, boneStart - groupStart);
+                for (int o = 0; o < groupNames.Length; o++)
+                {
+                    if (groupNames[o] == 0x00)
+                    {
+                        groupNames[o] = 0x0A;
+                    }
+                }
+                string tx = Encoding.ASCII.GetString(groupNames);
+                Lines = tx.Split('\n').ToList();
+                Lines.RemoveAt(0);
+                Lines.RemoveAt(Lines.Count - 1);
+                foreach (string s in Lines.ToList())
+                {
+                    if (s.Contains(" "))
+                        Lines.Remove(s);
+                    else Lines[Lines.IndexOf(s)] = s.Remove(0, modelName.Length + 1);
+                }
+            }
+
+            // Read each mesh in the xfbin
             for (int i = 0; i < searchResults.Count; i++)
             {
                 meshList.Add(LoadNud(fileBytes, searchResults[i], true));
                 meshCount++;
             }
-            //int groupNo = 0;
+
+            // Set each group name to its byte
             List<Group> groupBytes = new List<Group>();
             foreach (NUD mesh in meshList)
             {
@@ -55,7 +111,16 @@ namespace StickyFingers
                         groupBytes.Add(mesh.GroupBytes[a]);
                 }
             }
+            if (Lines.Any())
+            {
+                foreach (Group g in groupBytes)
+                {
+                    g.Name = Lines[groupBytes.IndexOf(g)];
+                }
+            }
             List<int> BoneIDs3 = BoneIDs;
+
+            // Dynamically set the properties for each xfbin
             if (xfbinNo == 1)
             {
                 xfbin1Open = true;
@@ -401,29 +466,39 @@ namespace StickyFingers
             int[] searchIndex = new int[searchList.Count()];
             int x = start;
             int n = 0;
-            while (reverse && x < start + 1 || x < end)
+            int i = 0;
+            while (reverse && x > end || !reverse && x < end)
             {
-                if (file[x] == searchList[n])
+                if (file[x + i] == searchList[n])
                 {
-                    if (n == 0 || searchIndex[n - 1] == x - 1)
+                    if (n == 0 || searchIndex[n - 1] == x - 1 || reverse && searchIndex[n - 1] == x + i - 1)
                     {
-                        searchIndex[n] = x;
+                        searchIndex[n] = x + i;
                         n++;
+                        if (reverse) i+= 2;
+                        //if (i == 1) i++;
                         if (n == searchList.Count())
                         {
                             indices.Add(searchIndex[0]);
-                            if (indices.Count == count && !reverse) x = end;
+                            if (indices.Count == count) x = end;
                             else if (reverse) x = start + 2;
                             n = 0;
+                            i = 0;
                         }
                     }
                     else
                     {
                         n = 0;
+                        i = 0;
                         Array.Clear(searchIndex, 0, searchIndex.Length);
                     }
                 }
-                else n = 0;
+                else
+                {
+                    n = 0;
+                    i = 0;
+                    Array.Clear(searchIndex, 0, searchIndex.Length);
+                }
                 if (reverse) x--;
                 else x++;
             }
