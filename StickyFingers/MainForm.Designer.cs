@@ -73,17 +73,23 @@
             // 
             // xfbin1Box
             // 
+            this.xfbin1Box.AllowDrop = true;
             this.xfbin1Box.Location = new System.Drawing.Point(12, 48);
             this.xfbin1Box.Name = "xfbin1Box";
             this.xfbin1Box.Size = new System.Drawing.Size(579, 22);
             this.xfbin1Box.TabIndex = 0;
+            this.xfbin1Box.DragDrop += new System.Windows.Forms.DragEventHandler(this.XfbinBox_DragDrop);
+            this.xfbin1Box.DragOver += new System.Windows.Forms.DragEventHandler(this.XfbinBox_DragOver);
             // 
             // xfbin2Box
             // 
+            this.xfbin2Box.AllowDrop = true;
             this.xfbin2Box.Location = new System.Drawing.Point(12, 233);
             this.xfbin2Box.Name = "xfbin2Box";
             this.xfbin2Box.Size = new System.Drawing.Size(579, 22);
             this.xfbin2Box.TabIndex = 1;
+            this.xfbin2Box.DragDrop += new System.Windows.Forms.DragEventHandler(this.XfbinBox_DragDrop);
+            this.xfbin2Box.DragOver += new System.Windows.Forms.DragEventHandler(this.XfbinBox_DragOver);
             // 
             // xfbin1Browse
             // 

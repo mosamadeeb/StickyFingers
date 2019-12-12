@@ -9,7 +9,8 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static StickyFingers.Variables;
-using static StickyFingers.Methods;
+using static StickyFingers.Load;
+using static StickyFingers.Save;
 
 namespace StickyFingers
 {
@@ -49,9 +50,9 @@ namespace StickyFingers
                         item.SubItems.Add(BitConverter.ToString(BitConverter.GetBytes(group.EndByte)).Substring(0, 2));
                         groupsBox.Items.Add(item);
                     }
-                    mesh1Box.SelectedIndex = 0;
-                    mesh1Box.Focus(); 
                 }
+                mesh1Box.SelectedIndex = 0;
+                mesh1Box.Focus();
                 EnableButtons();
             }
         }
@@ -79,7 +80,6 @@ namespace StickyFingers
                             mesh2Box.Items.Add(nameInList.MeshName);
                         }
                     }
-                    else return;
                 }
                 mesh2Box.SelectedIndex = 0;
                 mesh2Box.Focus();
@@ -203,13 +203,90 @@ namespace StickyFingers
                 exportB1Button.Enabled = true;
             }
         }
-
         private void ExportB1Button_Click(object sender, EventArgs e)
         {
             if (BoneNames.Any())
             {
                 File.WriteAllLines(modelName + "_bones.txt", BoneNames);
                 MessageBox.Show($"File saved as \"" + modelName + "_bones.txt" + "\" in the program's directory.", $"Success");
+            }
+        }
+        private void XfbinBox_DragOver(object sender, DragEventArgs e)
+        {
+            dragFilePath = "";
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = e.Data.GetData(DataFormats.FileDrop) as string[];
+                string format = Path.GetExtension(files[0]);
+                if (files.Length == 1)
+                {
+                    if (format == ".xfbin" || format == ".bak" && files[0].Contains(".xfbin"))
+                    {
+                        e.Effect = DragDropEffects.Copy;
+                        dragFilePath = files[0];
+                    }
+                    else if ((sender as TextBox).Name == "xfbin2Box" && format == ".nud")
+                    {
+                        e.Effect = DragDropEffects.Copy;
+                        dragFilePath = files[0];
+                    }
+                }
+            }
+        }
+        private void XfbinBox_DragDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                if ((sender as TextBox).Name == "xfbin2Box")
+                {
+                    XfbinClose(2);
+                    xfbin2Path = dragFilePath;
+                    FileInfo file = new FileInfo(xfbin2Path);
+                    if (file.Extension == ".nud")
+                    {
+                        nudPath = xfbin2Path;
+                        nudOpen = true;
+                        xfbin2Box.Text = nudPath;
+                        externalMesh = LoadNud(File.ReadAllBytes(nudPath), 0, false);
+                        mesh2Box.Items.Add(externalMesh.MeshName);
+                    }
+                    else
+                    {
+                        if (XfbinOpen(2, xfbin2Path))
+                        {
+                            xfbin2Box.Text = xfbin2Path;
+                            foreach (var nameInList in meshList2)
+                            {
+                                mesh2Box.Items.Add(nameInList.MeshName);
+                            }
+                        }
+                    }
+                    mesh2Box.SelectedIndex = 0;
+                    mesh2Box.Focus();
+                    EnableButtons();
+                }
+                else
+                {
+                    XfbinClose(1);
+                    xfbin1Path = dragFilePath;
+                    if (XfbinOpen(1, xfbin1Path))
+                    {
+                        xfbin1Box.Text = dragFilePath;
+                        foreach (var nameInList in meshList1)
+                        {
+                            mesh1Box.Items.Add(nameInList.MeshName);
+                        }
+                        foreach (var group in xfbin1Groups)
+                        {
+                            ListViewItem item = new ListViewItem(group.Name);
+                            item.SubItems.Add(BitConverter.ToString(BitConverter.GetBytes(group.EndByte)).Substring(0, 2));
+                            groupsBox.Items.Add(item);
+                        }
+                        mesh1Box.SelectedIndex = 0;
+                        mesh1Box.Focus();
+                        EnableButtons();
+                    }
+                }
             }
         }
     }
