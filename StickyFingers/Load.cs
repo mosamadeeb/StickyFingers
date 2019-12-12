@@ -39,7 +39,7 @@ namespace StickyFingers
             }
 
             // Find the group names + arrange them
-            /*if (SearchForByte("trall", fileBytes, 0, fileBytes.Length, 1).Any())
+            if (SearchForByte("trall", fileBytes, 0, fileBytes.Length, 1).Any())
             {
                 int end = SearchForByte("trall", fileBytes, 0, fileBytes.Length, 1)[0];
                 string modelName = "";
@@ -93,7 +93,7 @@ namespace StickyFingers
                         Lines.Remove(s);
                     else Lines[Lines.IndexOf(s)] = s.Remove(0, modelName.Length + 1);
                 }
-            }*/
+            }
 
             // Read each mesh in the xfbin
             for (int i = 0; i < searchResults.Count; i++)
