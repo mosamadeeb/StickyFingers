@@ -185,7 +185,7 @@ namespace StickyFingers
         }
         private void ExportNud2_Click(object sender, EventArgs e)
         {
-            ExportNud(file1Bytes, meshList2, mesh2Box.SelectedIndex);
+            ExportNud(file2Bytes, meshList2, mesh2Box.SelectedIndex);
         }
         private void ReplaceButton_Click(object sender, EventArgs e)
         {

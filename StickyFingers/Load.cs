@@ -189,7 +189,7 @@ namespace StickyFingers
             }
             else
             {
-                fileSize = headerSize + ndp3Size + 0x02;
+                fileSize = ndp3Size + 0x02;
                 nudFile = fileBytes;
             }
             for (int a = 0; a < groupCount; a++)

@@ -120,6 +120,11 @@ namespace StickyFingers
             {
                 if (nudOpen)
                 {
+                    if (newNud.Last() != 0x00) // Remove extra group bytes
+                    {
+                        int l = 0x02 + (mesh2.GroupCount * 0x04);
+                        newNud.RemoveRange(newNud.Count - l, l);
+                    }
                     newNud.Add(0x00);
                     newNud.Add(BitConverter.GetBytes(groups2)[0]);
                     for (int x = 0; x < groups2; x++)
@@ -154,6 +159,11 @@ namespace StickyFingers
                 }
                 if (nudOpen)
                 {
+                    if (newNud.Last() != 0x00) // Remove extra group bytes
+                    {
+                        int l = 0x02 + (mesh2.GroupCount * 0x04);
+                        newNud.RemoveRange(newNud.Count - l, l);
+                    }
                     newNud.Add(0x00);
                     newNud.Add(BitConverter.GetBytes(groups2)[0]);
                     for (int x = 0; x < groups1; x++)
