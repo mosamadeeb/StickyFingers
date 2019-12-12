@@ -359,15 +359,27 @@ namespace StickyFingers
                 bool skipped = false;
                 for (int n = 0; n >= 0; n++)
                 {
-                    boneEnd = SearchForByte(modelName, fileBytes, boneStart + x, fileBytes.Length, 1)[0];
-                    x = boneEnd - boneStart + 1;
-                    if (fileBytes[boneEnd + modelName.Length + 2] != 0x20) // space
+                    if (n == 182)
                     {
-                        if (skipped)
+
+                    }
+                    if (fileBytes[boneEnd + 2] == 0x00) n = -2;
+                    if (SearchForByte(modelName, fileBytes, boneStart + x, fileBytes.Length, 1).Any())
+                    {
+                        t = SearchForByte(modelName, fileBytes, boneStart + x, fileBytes.Length, 1)[0];
+                        if (fileBytes[t + modelName.Length + 2] != 0x20) // space
                         {
-                            n = -2;
+                            if (skipped)
+                            {
+                                n = -2;
+                            }
+                            else skipped = true;
                         }
-                        else skipped = true;
+                        if (n != -2)
+                        {
+                            boneEnd = SearchForByte("null1", fileBytes, boneStart + x, fileBytes.Length, 1)[0];
+                            x = boneEnd - boneStart + 1;
+                        }
                     }
                 }
 
@@ -383,7 +395,7 @@ namespace StickyFingers
                 string tx = Encoding.ASCII.GetString(boneNames);
                 Lines = tx.Split('\n').ToList();
                 Lines.RemoveAt(1);
-                Lines.RemoveAt(Lines.Count - 1);
+                if (Lines.Last() == "") Lines.RemoveAt(Lines.Count - 1);
                 foreach (string s in Lines.ToList())
                 {
                     Lines[Lines.IndexOf(s)] = s.Remove(0, modelName.Length + 3);

@@ -69,6 +69,7 @@
             this.bones1Button = new System.Windows.Forms.Button();
             this.openBones1Dialog = new System.Windows.Forms.OpenFileDialog();
             this.exportB1Button = new System.Windows.Forms.Button();
+            this.bones1Label = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // xfbin1Box
@@ -492,10 +493,20 @@
             this.exportB1Button.UseVisualStyleBackColor = true;
             this.exportB1Button.Click += new System.EventHandler(this.ExportB1Button_Click);
             // 
+            // bones1Label
+            // 
+            this.bones1Label.AutoSize = true;
+            this.bones1Label.Location = new System.Drawing.Point(176, 9);
+            this.bones1Label.Name = "bones1Label";
+            this.bones1Label.Size = new System.Drawing.Size(116, 17);
+            this.bones1Label.TabIndex = 66;
+            this.bones1Label.Text = "No bones loaded";
+            // 
             // MainForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.ClientSize = new System.Drawing.Size(820, 450);
+            this.Controls.Add(this.bones1Label);
             this.Controls.Add(this.exportB1Button);
             this.Controls.Add(this.bones1Button);
             this.Controls.Add(this.groupsBoxLabel);
@@ -582,6 +593,7 @@
         private System.Windows.Forms.Button bones1Button;
         private System.Windows.Forms.OpenFileDialog openBones1Dialog;
         private System.Windows.Forms.Button exportB1Button;
+        private System.Windows.Forms.Label bones1Label;
     }
 }
 

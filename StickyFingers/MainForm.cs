@@ -140,6 +140,8 @@ namespace StickyFingers
         public void XfbinClose(int xfbinNo)
         {
             BoneIDs.Clear();
+            BoneNames.Clear();
+            bones1Label.Text = "No bones loaded";
             if (xfbinNo == 1)
             {
                 mesh1Box.Items.Clear();
@@ -200,6 +202,7 @@ namespace StickyFingers
             if (openBones1Dialog.ShowDialog() == DialogResult.OK)
             {
                 LoadBones(1, openBones1Dialog.FileName);
+                bones1Label.Text = "Bones Loaded: " + openBones1Dialog.SafeFileName;
                 exportB1Button.Enabled = true;
             }
         }
