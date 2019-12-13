@@ -67,9 +67,19 @@ namespace StickyFingers
                 }
                 int groupStart = 0;
                 int x = 0;
+                bool isStorm = false;
                 for (int n = 0; n >= 0; n++)
                 {
-                    groupStart = SearchForByte(modelName, fileBytes, boneStart - x, 0, 1)[0];
+                    try
+                    {
+                        groupStart = SearchForByte(modelName, fileBytes, boneStart - x, 0, 1)[0];
+                    }
+                    catch
+                    {
+                        isStorm = true;
+                        modelName = modelName.Remove(4, 2); // hack for nsuns models, ex: xchrbod1
+                        groupStart = SearchForByte(modelName, fileBytes, boneStart - x, 0, 1)[0];
+                    }
                     x = boneStart - groupStart + 1;
                     if (fileBytes[groupStart + modelName.Length] == 0)
                         n = -2;
@@ -91,7 +101,17 @@ namespace StickyFingers
                 {
                     if (s.Contains(" "))
                         Lines.Remove(s);
-                    else Lines[Lines.IndexOf(s)] = s.Remove(0, modelName.Length + 1);
+                    else
+                    {
+                        if (isStorm)
+                        {
+                            Lines[Lines.IndexOf(s)] = s.Remove(0, modelName.Length - 4);
+                        }
+                        else
+                        {
+                            Lines[Lines.IndexOf(s)] = s.Remove(0, modelName.Length + 1);
+                        }
+                    }
                 }
             }
 
@@ -114,10 +134,14 @@ namespace StickyFingers
             }
             if (Lines.Any())
             {
-                foreach (Group g in groupBytes)
+                try
                 {
-                    g.Name = Lines[groupBytes.IndexOf(g)];
+                    foreach (Group g in groupBytes)
+                    {
+                        g.Name = Lines[groupBytes.IndexOf(g)];
+                    }
                 }
+                catch { }
             }
             List<int> BoneIDs3 = BoneIDs;
 
@@ -226,35 +250,40 @@ namespace StickyFingers
             int vertFormat = nudFile[sec1Index + 0x27]; // either 0x14 or 0x00, for stating if there are vertices or not
             int matIndex = x + BigBitConverter.ToInt16(nudFile, sec1Index + 0x42);
             bool mirrorState = false;
-            int mirrorByte = BigBitConverter.ToInt16(nudFile, matIndex + 0x12);
+            int mirrorByte = BigBitConverter.ToInt16(nudFile, matIndex + 0x12); // mirrorState = CullMode
             if (mirrorByte == 0x00) mirrorState = true; // true for ASB models with no bod1_f, else false
             string matName = BitConverter.ToString(nudFile, matIndex + 1, 3).Replace('-', ' ');
             if (matName[1] == '0') matName = matName.TrimStart('0', '0', ' ');
             string meshName = Encoding.Default.GetString(nudFile.ToArray(), vertIndex + vertSize, 0x20);
             meshName = meshName.Remove(meshName.IndexOf("\0"));
 
+            // Credit goes to the Smash Forge team for mesh formats
             string meshFormatName = "";
             foreach (Polygon p in poly)
             {
                 switch (p.FormatByte)
                 {
                     case 0x06: // Storm teeth/eyes
+                        // NormalsHalfFloat
                         p.MeshFormat = 0x1C;
                         break;
                     case 0x20: // Storm effects (not ready)
                         p.MeshFormat = 0x20;
                         break;
                     case 0x07: // JoJo teeth
+                        // NormalsTanBiTanHalfFloat
                         p.MeshFormat = 0x2C;
                         break;
                     case 0x30: // JoJo teeth (not ready)
                         p.MeshFormat = 0x30;
                         break;
                     case 0x11: // Storm most meshes + JoJo eyes
+                        // NormalsFloat
                         p.MeshFormat = 0x40;
                         p.BoneOffset = 0x20;
                         break;
                     case 0x13: // JoJo most meshes
+                        // NormalsTanBiTanFloat
                         p.MeshFormat = 0x60;
                         p.BoneOffset = 0x40;
                         break;
